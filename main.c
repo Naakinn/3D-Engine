@@ -1,26 +1,29 @@
 #include <SDL2/SDL.h>
+#include "graphics.h"
 
 int initSDL(char* title, int width, int height); 
 void quitSDL(); 
 
-static SDL_Window* window = 0; 
-static SDL_Renderer* renderer = 0; 
+static SDL_Window* window; 
+static SDL_Renderer* renderer; 
 
-// gcc main.c `sdl2-config --cflags --libs`
+// gcc main.c graphics.c `sdl2-config --cflags --libs`
 int main() {
 	
-	/* SDL basic initialization */
-	if (initSDL("Hello SDL", 640, 480) != 0) {
+	if (initSDL("Hello SDL", WINDOW_WIDTH, WINDOW_HEIGHT) != 0) {
 		return 1; 
 	} 
 	
-	/* Some SDL options */
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
+	
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+	
+	SDL_RenderDrawLine(renderer, scaleX(0), scaleY(0), scaleX(100), scaleY(100)); 
+
 	SDL_RenderPresent(renderer);
 	
-	
-	SDL_Delay(2000); 
+	SDL_Delay(5000); 
 	quitSDL();
 
 	return 0;
