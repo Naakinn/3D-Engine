@@ -77,24 +77,32 @@ void prepRender() {
 void render() {
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	for (int i = 0; i < trgnum; ++i) {
-		
-		struct triangle trg;  
-		multiplyVecMat(&meshCube.triangles[i].v[0], matProjection, &trg.v[0]);
-		multiplyVecMat(&meshCube.triangles[i].v[1], matProjection, &trg.v[1]);
-		multiplyVecMat(&meshCube.triangles[i].v[2], matProjection, &trg.v[2]);
-		
-		trg.v[0].x += 1.0; trg.v[0].y += 1.0; 
-		trg.v[1].x += 1.0; trg.v[1].y += 1.0; 
-		trg.v[2].x += 1.0; trg.v[2].y += 1.0; 
 
-		trg.v[0].x *= 0.5 * WIDTH; 
-		trg.v[0].y *= 0.5 * HEIGHT; 
-		trg.v[1].x *= 0.5 * WIDTH; 
-		trg.v[1].y *= 0.5 * HEIGHT; 
-		trg.v[2].x *= 0.5 * WIDTH; 
-		trg.v[2].y *= 0.5 * HEIGHT; 
+		struct triangle tri = meshCube.triangles[i]; 
+		struct triangle trgProjected, trgTranslated;  
+
+		trgTranslated = tri; 
 		
-		drawTrg(&trg);
+		trgTranslated.v[0].z = tri.v[0].z + 3.0; 
+		trgTranslated.v[1].z = tri.v[1].z + 3.0; 
+		trgTranslated.v[2].z = tri.v[2].z + 3.0; 
+		
+		multiplyVecMat(&trgTranslated.v[0], matProjection, &trgProjected.v[0]);
+		multiplyVecMat(&trgTranslated.v[1], matProjection, &trgProjected.v[1]);
+		multiplyVecMat(&trgTranslated.v[2], matProjection, &trgProjected.v[2]);
+		
+		trgProjected.v[0].x += 1.0; trgProjected.v[0].y += 1.0; 
+		trgProjected.v[1].x += 1.0; trgProjected.v[1].y += 1.0; 
+		trgProjected.v[2].x += 1.0; trgProjected.v[2].y += 1.0; 
+
+		trgProjected.v[0].x *= 0.5 * WIDTH; 
+		trgProjected.v[0].y *= 0.5 * HEIGHT; 
+		trgProjected.v[1].x *= 0.5 * WIDTH; 
+		trgProjected.v[1].y *= 0.5 * HEIGHT; 
+		trgProjected.v[2].x *= 0.5 * WIDTH; 
+		trgProjected.v[2].y *= 0.5 * HEIGHT; 
+		
+		drawTrg(&trgProjected);
 	};
 }
 
