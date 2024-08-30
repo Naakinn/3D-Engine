@@ -21,10 +21,11 @@ void drawTrg(struct triangle* trg);
 
 static const float dNear = 1.0;
 static const float dFar = 1000.0; 
-static const float aspect = WIDTH / HEIGHT; 
+static const float aspect =  HEIGHT / WIDTH; 
 static const float fov = 90.0; 
 static unsigned int trgnum = 0; 
 static float fovRad; 
+static float rotAngle = 1.0; 
 
 float matProjection[4][4] = {
 	{ 0, 0, 0,                              0 },
@@ -32,29 +33,37 @@ float matProjection[4][4] = {
 	{ 0, 0, dFar / ( dFar - dNear ),        1 },
 	{ 0, 0, -dFar * dNear / (dFar - dNear), 0 },
 };
+float matRotationX[4][4]; 
+float matRotationZ[4][4]; 
+
 
 void prepRender() {
+	
 	fovRad = 1.0 / tanf(fov * 0.5 / 180.0 * PI);
 	matProjection[0][0] = aspect * fovRad; 
-	/*matProjection[0][0] = fovRad; */
 	matProjection[1][1] = fovRad; 
 	
+	matRotationZ[2][2] = 1;
+	matRotationZ[3][3] = 1;
+	
+	matRotationX[0][0] = 1;
+	matRotationX[3][3] = 1;
 	
 	/* Some data */ 
 	enum { size = 36 }; 
 	struct vec3 vectors[size] = {
 		0.0, 0.0, 0.0,	0.0, 1.0, 0.0,	1.0, 1.0, 0.0,
-		0.0, 0.0, 0.0,  1.0, 1.0, 1.0,	1.0, 0.0, 0.0,
+		0.0, 0.0, 0.0,  1.0, 1.0, 0.0,	1.0, 0.0, 0.0,
 
 		1.0, 0.0, 0.0,  1.0, 1.0, 0.0,	1.0, 1.0, 1.0, 
 		1.0, 0.0, 0.0,  1.0, 1.0, 1.0,	1.0, 0.0, 1.0,
-		
+
 		1.0, 0.0, 1.0,  1.0, 1.0, 1.0,	0.0, 1.0, 1.0, 
 		1.0, 0.0, 1.0,  0.0, 1.0, 1.0,	0.0, 0.0, 1.0,
-		
+
 		0.0, 0.0, 1.0,  0.0, 1.0, 1.0,	0.0, 1.0, 0.0, 
 		0.0, 0.0, 1.0,	0.0, 1.0, 0.0,	0.0, 0.0, 0.0, 
-		
+
 		0.0, 1.0, 0.0,	0.0, 1.0, 1.0,	1.0, 1.0, 1.0, 
 		0.0, 1.0, 0.0, 	1.0, 1.0, 1.0,	1.0, 1.0, 0.0,
 
@@ -71,21 +80,45 @@ void prepRender() {
 			++k;
 		}
 	}
+	
 }
 
 
 void render() {
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	for (int i = 0; i < trgnum; ++i) {
-
-		struct triangle tri = meshCube.triangles[i]; 
-		struct triangle trgProjected, trgTranslated;  
-
-		trgTranslated = tri; 
+	rotAngle += .01; 
+	
+	matRotationZ[0][0] = cosf(rotAngle);
+	matRotationZ[0][1] = sinf(rotAngle);
+	matRotationZ[1][0] = -sinf(rotAngle);
+	matRotationZ[1][1] = cosf(rotAngle);
 		
-		trgTranslated.v[0].z = tri.v[0].z + 3.0; 
-		trgTranslated.v[1].z = tri.v[1].z + 3.0; 
-		trgTranslated.v[2].z = tri.v[2].z + 3.0; 
+	matRotationX[1][1] = cosf(rotAngle * 0.5);
+	matRotationX[1][2] = sinf(rotAngle * 0.5);
+	matRotationX[2][1] = -sinf(rotAngle * 0.5);
+	matRotationX[2][2] = cosf(rotAngle * 0.5);
+	
+	for (int i = 0; i < trgnum; ++i) {
+		
+		struct triangle tri = meshCube.triangles[i]; 
+		struct triangle trgRotatedZ, trgRotatedX, trgTranslated, trgProjected; 
+		
+		multiplyVecMat(&tri.v[0], matRotationZ, &trgRotatedZ.v[0]);
+		multiplyVecMat(&tri.v[1], matRotationZ, &trgRotatedZ.v[1]);
+		multiplyVecMat(&tri.v[2], matRotationZ, &trgRotatedZ.v[2]);
+		
+		multiplyVecMat(&trgRotatedZ.v[0], matRotationX, &trgRotatedX.v[0]);
+		multiplyVecMat(&trgRotatedZ.v[1], matRotationX, &trgRotatedX.v[1]);
+		multiplyVecMat(&trgRotatedZ.v[2], matRotationX, &trgRotatedX.v[2]);
+		/*multiplyVecMat(&tri.v[0], matRotationX, &trgRotatedX.v[0]);*/
+		/*multiplyVecMat(&tri.v[1], matRotationX, &trgRotatedX.v[1]);*/
+		/*multiplyVecMat(&tri.v[2], matRotationX, &trgRotatedX.v[2]);*/
+		
+		
+		trgTranslated = trgRotatedX; 
+		
+		trgTranslated.v[0].z = trgRotatedX.v[0].z + 3.0; 
+		trgTranslated.v[1].z = trgRotatedX.v[1].z + 3.0; 
+		trgTranslated.v[2].z = trgRotatedX.v[2].z + 3.0; 
 		
 		multiplyVecMat(&trgTranslated.v[0], matProjection, &trgProjected.v[0]);
 		multiplyVecMat(&trgTranslated.v[1], matProjection, &trgProjected.v[1]);
@@ -120,7 +153,6 @@ void multiplyVecMat(struct vec3* vec, float matrix[4][4], struct vec3* ovec) {
 }
 
 void drawTrg(struct triangle* trg) {
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); 
 	SDL_RenderDrawLine(renderer, trg->v[0].x, trg->v[0].y, trg->v[1].x, trg->v[1].y);
 	SDL_RenderDrawLine(renderer, trg->v[1].x, trg->v[1].y, trg->v[2].x, trg->v[2].y);
 	SDL_RenderDrawLine(renderer, trg->v[2].x, trg->v[2].y, trg->v[0].x, trg->v[0].y);
