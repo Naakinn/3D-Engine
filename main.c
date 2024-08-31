@@ -2,8 +2,6 @@
 #include "input.h"
 #include "render.h"
 
-#define COLOR_STEP 1; 
-
 SDL_Window* window; 
 SDL_Renderer* renderer; 
 int pause = 0; 
@@ -17,7 +15,6 @@ int main() {
 	
 	struct color cBlack = { 0, 0, 0, 255 }; 
 	struct color cWhite = { 255, 255, 255, 255 }; 
-	struct color temp = { 255, 0, 0, 255 };  
 
 	setColor(cBlack); 
 	SDL_RenderClear(renderer);
@@ -34,25 +31,7 @@ int main() {
 
 		
 		if (!pause) {
-			if (temp.r == 255 && temp.g == 0 && temp.b != 255) {
-				temp.b += COLOR_STEP; 
-			} 
-			else if (temp.b == 255 && temp.g == 0 && temp.r > 0) {
-				temp.r -= COLOR_STEP; 
-			} 
-			else if (temp.b == 255 && temp.r == 0 && temp.g != 255) {
-				temp.g += COLOR_STEP; 
-			} 
-			else if (temp.g == 255 && temp.r == 0 && temp.b > 0) {
-				temp.b -= COLOR_STEP; 
-			} 
-			else if (temp.g == 255 && temp.b ==  0 && temp.r != 255) {
-				temp.r += COLOR_STEP; 
-			} 
-			else if (temp.r == 255 && temp.b == 0) {
-				temp.g -= COLOR_STEP; 
-			}
-			setColor(temp); 
+			setColor(cWhite); 
 			render(); 
 			SDL_RenderPresent(renderer);
 		}

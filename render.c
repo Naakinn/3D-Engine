@@ -1,8 +1,8 @@
 #include "render.h"
 #include "sdl.h"
 
-#define ANGLE_STEP .020
-#define ZDISTANCE 2.0
+#define ANGLE_STEP .015
+#define ZDISTANCE 2.5
 
 extern SDL_Renderer* renderer; 
 
@@ -22,6 +22,7 @@ struct mesh {
 void multiplyVecMat(struct vec3* vec, float matrix[4][4]);
 void drawTrg(struct triangle* trg); 
 
+static const struct vec3 camera = { 0, 0, 0 }; 
 static const float dNear = 1.0;
 static const float dFar = 1000.0; 
 static const float aspect =  HEIGHT / WIDTH; 
@@ -96,31 +97,33 @@ void prepRender() {
 
 
 void render() {
-	/* Runtime calculations during render */
-	rotAngle -= ANGLE_STEP; 
 	
-	/* matRotationX[1][1] = cosf(rotAngle * 0.5); */
-	/* matRotationX[1][2] = sinf(rotAngle * 0.5); */
-	/* matRotationX[2][1] = -sinf(rotAngle * 0.5); */
-	/* matRotationX[2][2] = cosf(rotAngle * 0.5); */
+	struct triangle triangle;
+	struct vec3 normal, line1, line2;
+	float normalLength; 
+	
+	/* Runtime calculations during render */
+	rotAngle += ANGLE_STEP; 
+	
 	matRotationX[1][1] =  cosf(rotAngle * 0.5);
 	matRotationX[1][2] =  sinf(rotAngle * 0.5);
 	matRotationX[2][1] = -sinf(rotAngle * 0.5);
 	matRotationX[2][2] =  cosf(rotAngle * 0.5);
 
-	matRotationY[0][0] =  cosf(-rotAngle); 
-	matRotationY[0][2] =  sinf(-rotAngle); 
-	matRotationY[2][0] = -sinf(-rotAngle); 
-	matRotationY[2][2] =  cosf(-rotAngle); 
+	matRotationY[0][0] =  cosf(rotAngle); 
+	matRotationY[0][2] =  sinf(rotAngle); 
+	matRotationY[2][0] = -sinf(rotAngle); 
+	matRotationY[2][2] =  cosf(rotAngle); 
 	
-	matRotationZ[0][0] =  cosf(-rotAngle);
-	matRotationZ[0][1] =  sinf(-rotAngle);
-	matRotationZ[1][0] = -sinf(-rotAngle);
-	matRotationZ[1][1] =  cosf(-rotAngle);
+	matRotationZ[0][0] =  cosf(rotAngle);
+	matRotationZ[0][1] =  sinf(rotAngle);
+	matRotationZ[1][0] = -sinf(rotAngle);
+	matRotationZ[1][1] =  cosf(rotAngle);
+	
 	
 	for (int i = 0; i < trgnum; ++i) {
 		
-		struct triangle triangle = meshCube.triangles[i]; 
+		triangle = meshCube.triangles[i]; 
 		
 		/* Shift cube's center to point [0,0,0] */
 		triangle.v[0].x -= .5;
@@ -144,34 +147,62 @@ void render() {
 		multiplyVecMat(&triangle.v[1], matRotationY);
 		multiplyVecMat(&triangle.v[2], matRotationY);
 
-		/* multiplyVecMat(&triangle.v[0], matRotationZ); */
-		/* multiplyVecMat(&triangle.v[1], matRotationZ); */
-		/* multiplyVecMat(&triangle.v[2], matRotationZ); */
+		multiplyVecMat(&triangle.v[0], matRotationZ);
+		multiplyVecMat(&triangle.v[1], matRotationZ);
+		multiplyVecMat(&triangle.v[2], matRotationZ);
 		
 		/* Scale z coordinate to adjust the view */ 
 		triangle.v[0].z += ZDISTANCE; 
 		triangle.v[1].z += ZDISTANCE; 
 		triangle.v[2].z += ZDISTANCE;  
 		
-		/* Project the cube on the screen */ 
-		multiplyVecMat(&triangle.v[0], matProjection);
-		multiplyVecMat(&triangle.v[1], matProjection);
-		multiplyVecMat(&triangle.v[2], matProjection);
+		/* Calculate normal */
+		line1.x = triangle.v[1].x - triangle.v[0].x; 
+		line1.y = triangle.v[1].y - triangle.v[0].y; 
+		line1.z = triangle.v[1].z - triangle.v[0].z; 
 		
-		/* Adjust the cube */
-		triangle.v[0].x += 1.0; triangle.v[0].y += 1.0; 
-		triangle.v[1].x += 1.0; triangle.v[1].y += 1.0; 
-		triangle.v[2].x += 1.0; triangle.v[2].y += 1.0; 
+		line2.x = triangle.v[2].x - triangle.v[0].x; 
+		line2.y = triangle.v[2].y - triangle.v[0].y; 
+		line2.z = triangle.v[2].z - triangle.v[0].z; 
+		
+		normal.x = line1.y * line2.z - line1.z * line2.y; 
+		normal.y = line1.z * line2.x - line1.x * line2.z; 
+		normal.z = line1.x * line2.y - line1.y * line2.x; 
 
-		triangle.v[0].x *= 0.5 * WIDTH; 
-		triangle.v[0].y *= 0.5 * HEIGHT; 
-		triangle.v[1].x *= 0.5 * WIDTH; 
-		triangle.v[1].y *= 0.5 * HEIGHT; 
-		triangle.v[2].x *= 0.5 * WIDTH; 
-		triangle.v[2].y *= 0.5 * HEIGHT; 
+		normalLength = sqrtf(normal.x * normal.x +
+						     normal.y * normal.y + 
+						     normal.z * normal.z ); 
+			
+		normal.x /= normalLength; 
+		normal.y /= normalLength;
+		normal.z /= normalLength; 
 		
-		/* Draw triangles */
-		drawTrg(&triangle);
+		/* Draw only visible triangles */ 
+		if (
+			normal.x * (triangle.v[0].x - camera.x)+
+			normal.y * (triangle.v[0].y - camera.y)+	
+			normal.z * (triangle.v[0].z - camera.z) < 0.0 ) {
+			
+			/* Project the cube on the screen */ 
+			multiplyVecMat(&triangle.v[0], matProjection);
+			multiplyVecMat(&triangle.v[1], matProjection);
+			multiplyVecMat(&triangle.v[2], matProjection);
+
+			/* Adjust the cube */
+			triangle.v[0].x += 1.0; triangle.v[0].y += 1.0; 
+			triangle.v[1].x += 1.0; triangle.v[1].y += 1.0; 
+			triangle.v[2].x += 1.0; triangle.v[2].y += 1.0; 
+
+			triangle.v[0].x *= 0.5 * WIDTH; 
+			triangle.v[0].y *= 0.5 * HEIGHT; 
+			triangle.v[1].x *= 0.5 * WIDTH; 
+			triangle.v[1].y *= 0.5 * HEIGHT; 
+			triangle.v[2].x *= 0.5 * WIDTH; 
+			triangle.v[2].y *= 0.5 * HEIGHT; 
+
+			/* Draw triangles */
+			drawTrg(&triangle);
+		}
 	};
 }
 
