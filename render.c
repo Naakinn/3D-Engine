@@ -16,7 +16,7 @@ struct mesh {
 	struct triangle* triangles; 
 } meshCube;
 
-void multiplyVecMat(struct vec3* vec, float matrix[4][4], struct vec3* ovec);
+void multiplyVecMat(struct vec3* vec, float matrix[4][4]);
 void drawTrg(struct triangle* trg); 
 
 static const float dNear = 1.0;
@@ -34,8 +34,9 @@ float matProjection[4][4] = {
 	{ 0, 0, -dFar * dNear / (dFar - dNear), 0 },
 };
 float matRotationX[4][4]; 
+float matRotationY[4][4]; 
 float matRotationZ[4][4]; 
-
+float matRotationYawZ[4][4]; 
 
 void prepRender() {
 	
@@ -43,11 +44,17 @@ void prepRender() {
 	matProjection[0][0] = aspect * fovRad; 
 	matProjection[1][1] = fovRad; 
 	
-	matRotationZ[2][2] = 1;
-	matRotationZ[3][3] = 1;
-	
 	matRotationX[0][0] = 1;
 	matRotationX[3][3] = 1;
+
+	matRotationY[1][1] = 1;
+	matRotationY[3][3] = 1;
+	
+	matRotationZ[2][2] = 1;
+	matRotationZ[3][3] = 1;
+
+	matRotationYawZ[2][2] = 1; 
+	matRotationYawZ[3][3] = 1; 
 	
 	/* Some data */ 
 	enum { size = 36 }; 
@@ -87,69 +94,81 @@ void prepRender() {
 void render() {
 	rotAngle += .01; 
 	
-	matRotationZ[0][0] = cosf(rotAngle);
-	matRotationZ[0][1] = sinf(rotAngle);
-	matRotationZ[1][0] = -sinf(rotAngle);
-	matRotationZ[1][1] = cosf(rotAngle);
-		
 	matRotationX[1][1] = cosf(rotAngle * 0.5);
 	matRotationX[1][2] = sinf(rotAngle * 0.5);
 	matRotationX[2][1] = -sinf(rotAngle * 0.5);
 	matRotationX[2][2] = cosf(rotAngle * 0.5);
+
+	matRotationY[0][0] = cosf(rotAngle); 
+	matRotationY[0][2] = sinf(rotAngle); 
+	matRotationY[2][0] = -sinf(rotAngle); 
+	matRotationY[2][2] = cosf(rotAngle); 
+	
+	/*matRotationYawZ[0][0] = cosf(rotAngle); */
+	/*matRotationYawZ[0][1] = -sinf(rotAngle); */
+	/*matRotationYawZ[1][0] = sinf(rotAngle); */
+	/*matRotationYawZ[1][1] = cosf(rotAngle); */
+	
+	matRotationZ[0][0] = cosf(rotAngle);
+	matRotationZ[0][1] = sinf(rotAngle);
+	matRotationZ[1][0] = -sinf(rotAngle);
+	matRotationZ[1][1] = cosf(rotAngle);
 	
 	for (int i = 0; i < trgnum; ++i) {
 		
-		struct triangle tri = meshCube.triangles[i]; 
-		struct triangle trgRotatedZ, trgRotatedX, trgTranslated, trgProjected; 
+		struct triangle triangle = meshCube.triangles[i]; 
+		multiplyVecMat(&triangle.v[0], matRotationZ);
+		multiplyVecMat(&triangle.v[1], matRotationZ);
+		multiplyVecMat(&triangle.v[2], matRotationZ);
 		
-		multiplyVecMat(&tri.v[0], matRotationZ, &trgRotatedZ.v[0]);
-		multiplyVecMat(&tri.v[1], matRotationZ, &trgRotatedZ.v[1]);
-		multiplyVecMat(&tri.v[2], matRotationZ, &trgRotatedZ.v[2]);
+		multiplyVecMat(&triangle.v[0], matRotationY);
+		multiplyVecMat(&triangle.v[1], matRotationY);
+		multiplyVecMat(&triangle.v[2], matRotationY);
 		
-		multiplyVecMat(&trgRotatedZ.v[0], matRotationX, &trgRotatedX.v[0]);
-		multiplyVecMat(&trgRotatedZ.v[1], matRotationX, &trgRotatedX.v[1]);
-		multiplyVecMat(&trgRotatedZ.v[2], matRotationX, &trgRotatedX.v[2]);
-		/*multiplyVecMat(&tri.v[0], matRotationX, &trgRotatedX.v[0]);*/
-		/*multiplyVecMat(&tri.v[1], matRotationX, &trgRotatedX.v[1]);*/
-		/*multiplyVecMat(&tri.v[2], matRotationX, &trgRotatedX.v[2]);*/
+		multiplyVecMat(&triangle.v[0], matRotationX);
+		multiplyVecMat(&triangle.v[1], matRotationX);
+		multiplyVecMat(&triangle.v[2], matRotationX);
 		
 		
-		trgTranslated = trgRotatedX; 
+		triangle.v[0].z += 3.0; 
+		triangle.v[1].z += 3.0; 
+		triangle.v[2].z += 3.0; 
 		
-		trgTranslated.v[0].z = trgRotatedX.v[0].z + 3.0; 
-		trgTranslated.v[1].z = trgRotatedX.v[1].z + 3.0; 
-		trgTranslated.v[2].z = trgRotatedX.v[2].z + 3.0; 
 		
-		multiplyVecMat(&trgTranslated.v[0], matProjection, &trgProjected.v[0]);
-		multiplyVecMat(&trgTranslated.v[1], matProjection, &trgProjected.v[1]);
-		multiplyVecMat(&trgTranslated.v[2], matProjection, &trgProjected.v[2]);
+		multiplyVecMat(&triangle.v[0], matProjection);
+		multiplyVecMat(&triangle.v[1], matProjection);
+		multiplyVecMat(&triangle.v[2], matProjection);
 		
-		trgProjected.v[0].x += 1.0; trgProjected.v[0].y += 1.0; 
-		trgProjected.v[1].x += 1.0; trgProjected.v[1].y += 1.0; 
-		trgProjected.v[2].x += 1.0; trgProjected.v[2].y += 1.0; 
+		
+		triangle.v[0].x += 1.0; triangle.v[0].y += 1.0; 
+		triangle.v[1].x += 1.0; triangle.v[1].y += 1.0; 
+		triangle.v[2].x += 1.0; triangle.v[2].y += 1.0; 
 
-		trgProjected.v[0].x *= 0.5 * WIDTH; 
-		trgProjected.v[0].y *= 0.5 * HEIGHT; 
-		trgProjected.v[1].x *= 0.5 * WIDTH; 
-		trgProjected.v[1].y *= 0.5 * HEIGHT; 
-		trgProjected.v[2].x *= 0.5 * WIDTH; 
-		trgProjected.v[2].y *= 0.5 * HEIGHT; 
+		triangle.v[0].x *= 0.5 * WIDTH; 
+		triangle.v[0].y *= 0.5 * HEIGHT; 
+		triangle.v[1].x *= 0.5 * WIDTH; 
+		triangle.v[1].y *= 0.5 * HEIGHT; 
+		triangle.v[2].x *= 0.5 * WIDTH; 
+		triangle.v[2].y *= 0.5 * HEIGHT; 
 		
-		drawTrg(&trgProjected);
+		drawTrg(&triangle);
 	};
 }
 
-void multiplyVecMat(struct vec3* vec, float matrix[4][4], struct vec3* ovec) {
-	ovec->x = vec->x * matrix[0][0] + vec->y * matrix[1][0] + vec->z * matrix[2][0] + matrix[3][0]; 
-	ovec->y = vec->x * matrix[0][1] + vec->y * matrix[1][1] + vec->z * matrix[2][1] + matrix[3][1]; 
-	ovec->z = vec->x * matrix[0][2] + vec->y * matrix[1][2] + vec->z * matrix[2][2] + matrix[3][2]; 
+void multiplyVecMat(struct vec3* vec, float matrix[4][4]) {
+	float x = vec->x * matrix[0][0] + vec->y * matrix[1][0] + vec->z * matrix[2][0] + matrix[3][0]; 
+	float y = vec->x * matrix[0][1] + vec->y * matrix[1][1] + vec->z * matrix[2][1] + matrix[3][1]; 
+	float z = vec->x * matrix[0][2] + vec->y * matrix[1][2] + vec->z * matrix[2][2] + matrix[3][2]; 
 	float w = vec->x * matrix[0][3] + vec->y * matrix[1][3] + vec->z * matrix[2][3] + matrix[3][3]; 
-
+	
 	if (w != 0) {
-		ovec->x /= w; 
-		ovec->y /= w; 
-		ovec->z /= w; 
+		x /= w; 
+		y /= w; 
+		z /= w; 
 	}
+	vec->x = x; 
+	vec->y = y; 
+	vec->z = z; 
 }
 
 void drawTrg(struct triangle* trg) {
