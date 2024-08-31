@@ -1,6 +1,8 @@
 #include "render.h"
 #include "sdl.h"
 
+#define ANGLE_STEP .020
+#define ZDISTANCE 2.0
 
 extern SDL_Renderer* renderer; 
 
@@ -16,6 +18,7 @@ struct mesh {
 	struct triangle* triangles; 
 } meshCube;
 
+
 void multiplyVecMat(struct vec3* vec, float matrix[4][4]);
 void drawTrg(struct triangle* trg); 
 
@@ -25,7 +28,8 @@ static const float aspect =  HEIGHT / WIDTH;
 static const float fov = 90.0; 
 static unsigned int trgnum = 0; 
 static float fovRad; 
-static float rotAngle = 1.0; 
+static float rotAngle = 0.0; 
+
 
 float matProjection[4][4] = {
 	{ 0, 0, 0,                              0 },
@@ -36,6 +40,10 @@ float matProjection[4][4] = {
 float matRotationX[4][4]; 
 float matRotationY[4][4]; 
 float matRotationZ[4][4]; 
+
+void setColor(struct color color) { 
+	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a); 
+}
 
 void prepRender() {
 	
@@ -89,22 +97,26 @@ void prepRender() {
 
 void render() {
 	/* Runtime calculations during render */
-	rotAngle += .01; 
+	rotAngle -= ANGLE_STEP; 
 	
-	matRotationX[1][1] = cosf(rotAngle * 0.5);
-	matRotationX[1][2] = sinf(rotAngle * 0.5);
+	/* matRotationX[1][1] = cosf(rotAngle * 0.5); */
+	/* matRotationX[1][2] = sinf(rotAngle * 0.5); */
+	/* matRotationX[2][1] = -sinf(rotAngle * 0.5); */
+	/* matRotationX[2][2] = cosf(rotAngle * 0.5); */
+	matRotationX[1][1] =  cosf(rotAngle * 0.5);
+	matRotationX[1][2] =  sinf(rotAngle * 0.5);
 	matRotationX[2][1] = -sinf(rotAngle * 0.5);
-	matRotationX[2][2] = cosf(rotAngle * 0.5);
+	matRotationX[2][2] =  cosf(rotAngle * 0.5);
 
-	matRotationY[0][0] = cosf(rotAngle); 
-	matRotationY[0][2] = sinf(rotAngle); 
-	matRotationY[2][0] = -sinf(rotAngle); 
-	matRotationY[2][2] = cosf(rotAngle); 
+	matRotationY[0][0] =  cosf(-rotAngle); 
+	matRotationY[0][2] =  sinf(-rotAngle); 
+	matRotationY[2][0] = -sinf(-rotAngle); 
+	matRotationY[2][2] =  cosf(-rotAngle); 
 	
-	matRotationZ[0][0] = cosf(rotAngle);
-	matRotationZ[0][1] = sinf(rotAngle);
-	matRotationZ[1][0] = -sinf(rotAngle);
-	matRotationZ[1][1] = cosf(rotAngle);
+	matRotationZ[0][0] =  cosf(-rotAngle);
+	matRotationZ[0][1] =  sinf(-rotAngle);
+	matRotationZ[1][0] = -sinf(-rotAngle);
+	matRotationZ[1][1] =  cosf(-rotAngle);
 	
 	for (int i = 0; i < trgnum; ++i) {
 		
@@ -132,14 +144,14 @@ void render() {
 		multiplyVecMat(&triangle.v[1], matRotationY);
 		multiplyVecMat(&triangle.v[2], matRotationY);
 
-		multiplyVecMat(&triangle.v[0], matRotationZ);
-		multiplyVecMat(&triangle.v[1], matRotationZ);
-		multiplyVecMat(&triangle.v[2], matRotationZ);
+		/* multiplyVecMat(&triangle.v[0], matRotationZ); */
+		/* multiplyVecMat(&triangle.v[1], matRotationZ); */
+		/* multiplyVecMat(&triangle.v[2], matRotationZ); */
 		
 		/* Scale z coordinate to adjust the view */ 
-		triangle.v[0].z += 3.0; 
-		triangle.v[1].z += 3.0; 
-		triangle.v[2].z += 3.0; 
+		triangle.v[0].z += ZDISTANCE; 
+		triangle.v[1].z += ZDISTANCE; 
+		triangle.v[2].z += ZDISTANCE;  
 		
 		/* Project the cube on the screen */ 
 		multiplyVecMat(&triangle.v[0], matProjection);
