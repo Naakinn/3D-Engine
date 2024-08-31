@@ -36,10 +36,10 @@ float matProjection[4][4] = {
 float matRotationX[4][4]; 
 float matRotationY[4][4]; 
 float matRotationZ[4][4]; 
-float matRotationYawZ[4][4]; 
 
 void prepRender() {
 	
+	/* Calculations in runtime, but not in render loop */
 	fovRad = 1.0 / tanf(fov * 0.5 / 180.0 * PI);
 	matProjection[0][0] = aspect * fovRad; 
 	matProjection[1][1] = fovRad; 
@@ -52,9 +52,6 @@ void prepRender() {
 	
 	matRotationZ[2][2] = 1;
 	matRotationZ[3][3] = 1;
-
-	matRotationYawZ[2][2] = 1; 
-	matRotationYawZ[3][3] = 1; 
 	
 	/* Some data */ 
 	enum { size = 36 }; 
@@ -87,11 +84,11 @@ void prepRender() {
 			++k;
 		}
 	}
-	
 }
 
 
 void render() {
+	/* Runtime calculations during render */
 	rotAngle += .01; 
 	
 	matRotationX[1][1] = cosf(rotAngle * 0.5);
@@ -104,11 +101,6 @@ void render() {
 	matRotationY[2][0] = -sinf(rotAngle); 
 	matRotationY[2][2] = cosf(rotAngle); 
 	
-	/*matRotationYawZ[0][0] = cosf(rotAngle); */
-	/*matRotationYawZ[0][1] = -sinf(rotAngle); */
-	/*matRotationYawZ[1][0] = sinf(rotAngle); */
-	/*matRotationYawZ[1][1] = cosf(rotAngle); */
-	
 	matRotationZ[0][0] = cosf(rotAngle);
 	matRotationZ[0][1] = sinf(rotAngle);
 	matRotationZ[1][0] = -sinf(rotAngle);
@@ -117,29 +109,44 @@ void render() {
 	for (int i = 0; i < trgnum; ++i) {
 		
 		struct triangle triangle = meshCube.triangles[i]; 
-		multiplyVecMat(&triangle.v[0], matRotationZ);
-		multiplyVecMat(&triangle.v[1], matRotationZ);
-		multiplyVecMat(&triangle.v[2], matRotationZ);
 		
-		multiplyVecMat(&triangle.v[0], matRotationY);
-		multiplyVecMat(&triangle.v[1], matRotationY);
-		multiplyVecMat(&triangle.v[2], matRotationY);
+		/* Shift cube's center to point [0,0,0] */
+		triangle.v[0].x -= .5;
+		triangle.v[1].x -= .5;
+		triangle.v[2].x -= .5;
 		
+		triangle.v[0].y -= .5;
+		triangle.v[1].y -= .5;
+		triangle.v[2].y -= .5;
+		
+		triangle.v[0].z -= .5;
+		triangle.v[1].z -= .5;
+		triangle.v[2].z -= .5;
+		
+		/* Rotation */
 		multiplyVecMat(&triangle.v[0], matRotationX);
 		multiplyVecMat(&triangle.v[1], matRotationX);
 		multiplyVecMat(&triangle.v[2], matRotationX);
 		
+		multiplyVecMat(&triangle.v[0], matRotationY);
+		multiplyVecMat(&triangle.v[1], matRotationY);
+		multiplyVecMat(&triangle.v[2], matRotationY);
+
+		multiplyVecMat(&triangle.v[0], matRotationZ);
+		multiplyVecMat(&triangle.v[1], matRotationZ);
+		multiplyVecMat(&triangle.v[2], matRotationZ);
 		
+		/* Scale z coordinate to adjust the view */ 
 		triangle.v[0].z += 3.0; 
 		triangle.v[1].z += 3.0; 
 		triangle.v[2].z += 3.0; 
 		
-		
+		/* Project the cube on the screen */ 
 		multiplyVecMat(&triangle.v[0], matProjection);
 		multiplyVecMat(&triangle.v[1], matProjection);
 		multiplyVecMat(&triangle.v[2], matProjection);
 		
-		
+		/* Adjust the cube */
 		triangle.v[0].x += 1.0; triangle.v[0].y += 1.0; 
 		triangle.v[1].x += 1.0; triangle.v[1].y += 1.0; 
 		triangle.v[2].x += 1.0; triangle.v[2].y += 1.0; 
@@ -151,6 +158,7 @@ void render() {
 		triangle.v[2].x *= 0.5 * WIDTH; 
 		triangle.v[2].y *= 0.5 * HEIGHT; 
 		
+		/* Draw triangles */
 		drawTrg(&triangle);
 	};
 }
@@ -175,5 +183,6 @@ void drawTrg(struct triangle* trg) {
 	SDL_RenderDrawLine(renderer, trg->v[0].x, trg->v[0].y, trg->v[1].x, trg->v[1].y);
 	SDL_RenderDrawLine(renderer, trg->v[1].x, trg->v[1].y, trg->v[2].x, trg->v[2].y);
 	SDL_RenderDrawLine(renderer, trg->v[2].x, trg->v[2].y, trg->v[0].x, trg->v[0].y);
+	/* SDL_RenderDrawLine(renderer, WIDTH / 2, 0, WIDTH / 2, HEIGHT);  */
 }
 
