@@ -1,4 +1,4 @@
-#include "sdl.h"
+#include "init.h"
 #include "input.h"
 #include "render.h"
 
@@ -20,7 +20,7 @@ int main() {
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
 	
-	prepRender(); 
+	preRender(); 
 	
 	while (1) {
 		

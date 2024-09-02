@@ -1,4 +1,4 @@
-#include "sdl.h"
+#include "init.h"
 
 extern SDL_Window* window; 
 extern SDL_Renderer* renderer; 
