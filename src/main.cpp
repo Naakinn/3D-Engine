@@ -1,15 +1,15 @@
 #include "init.h"
 #include "input.h"
-#include "render.h"
+#include "render.hpp"
 
 SDL_Window* window; 
 SDL_Renderer* renderer; 
-int pause = 0; 
+extern int is_running; 
 
 
 int main() {
 	
-	if (initSDL("Hello SDL", WIDTH, HEIGHT)) {
+	if (init("Hello SDL", WIDTH, HEIGHT)) {
 		return 1; 
 	} 
 	
@@ -30,7 +30,7 @@ int main() {
 		listenInput();
 
 		
-		if (!pause) {
+		if (!is_running) {
 			setColor(cWhite); 
 			render(); 
 			SDL_RenderPresent(renderer);

@@ -3,7 +3,7 @@
 extern SDL_Window* window; 
 extern SDL_Renderer* renderer; 
 
-int initSDL(char* title, int width, int height) {
+int init(const char* title, int width, int height) {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
 		printf("SDL_Init Error: %s\n", SDL_GetError());
 		return 1;
@@ -23,7 +23,7 @@ int initSDL(char* title, int width, int height) {
 	return 0; 
 }
 
-void quitSDL() {
+void quit() {
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

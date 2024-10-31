@@ -1,7 +1,9 @@
+#ifndef RENDER_H
+#define RENDER_H
+
 #define WIDTH 1000.0f
 #define HEIGHT 1000.0f
 
- 
 struct color { 
 	int r, g, b, a; 
 };
@@ -9,3 +11,5 @@ struct color {
 void preRender(); 
 void render(); 
 void setColor(struct color color); 
+
+#endif

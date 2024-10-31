@@ -1,11 +1,12 @@
 #include "init.h"
+#include "input.h"
 
-extern int pause; 
+int is_running = 0; 
 
 void handleKeyUp(SDL_KeyboardEvent* event) {
 	if (event->repeat == 0) {
 		if (event->keysym.scancode == SDL_SCANCODE_SPACE) {
-			pause = ~pause; 
+			is_running = ~is_running; 
 		}
 	}
 }
@@ -18,7 +19,7 @@ void listenInput() {
 		switch (event.type) { 
 			
 			case SDL_QUIT: 
-				quitSDL(); 
+				quit(); 
 				
 			case SDL_KEYUP:
 				handleKeyUp(&event.key);

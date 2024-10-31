@@ -1,5 +1,6 @@
-#include "render.h"
-#include "init.h"
+#include "render.hpp"
+#include <SDL2/SDL.h>
+#include "glad/glad.h"
 
 #define ANGLE_STEP 0.015f
 #define ZDISTANCE 2.5f

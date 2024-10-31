@@ -1,26 +1,34 @@
 cmake_minimum_required(VERSION 3.10)
 
-# set(CMAKE_C_COMPILER "gcc")
-
-project(engine)
+project(3DEngine)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
+set(EXECUTABLE_NAME engine)
+
+option(USE_MOLD "Use mold instead of standard gnu ld(installation required)" ON)
+option(DEBUG "Build in debug output mode" ON)
 
 set(SRC 
-	${PROJECT_SOURCE_DIR}/main.c 
-	${PROJECT_SOURCE_DIR}/render.c 
-	${PROJECT_SOURCE_DIR}/input.c 
-	${PROJECT_SOURCE_DIR}/sdl.c 
+	${PROJECT_SOURCE_DIR}/src/main.cpp
+	${PROJECT_SOURCE_DIR}/src/render.cpp 
+	${PROJECT_SOURCE_DIR}/src/input.c 
+	${PROJECT_SOURCE_DIR}/src/init.c 
+	${PROJECT_SOURCE_DIR}/src/glad.c 
 	)
 
-add_compile_options(-ggdb -D_REENTRANT)
+add_link_options(-lm -lSDL2)
 
-add_link_options(-lm -L/usr/local/lib, -Wl,-rpath,/usr/local/lib -Wl,--enable-new-dtags -lSDL2)
+if(USE_MOLD) 
+	add_link_options(-fuse-ld=mold)
+endif()
 
-add_executable(${PROJECT_NAME} ${SRC})
+add_executable(${EXECUTABLE_NAME} ${SRC})
 
-target_include_directories(${PROJECT_NAME} PUBLIC 
+if(DEBUG) 
+	target_compile_definitions(${EXECUTABLE_NAME} PRIVATE "DEBUG")
+endif()
+
+target_include_directories(${EXECUTABLE_NAME} PUBLIC 
 	${PROJECT_SOURCE_DIR}/include 
 	/usr/local/include/SDL2/
 )
