@@ -9,14 +9,11 @@
 
 extern SDL_GLContext* glContext;
 extern SDL_Window* glWindow;
-extern glVBOVertex_t glVBOVertex;  
-extern GLuint glEBO; 
-extern GLuint glVAO; 
+extern glVBOVertex_t glVBOVertex;
+extern GLuint glEBO;
+extern GLuint glVAO;
 
-extern
-
-    int
-    init(const char* title, int width, int height) {
+int init(const char* title, int width, int height) {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         printf("[ERROR] SDL_Init: %s\n", SDL_GetError());
         return 1;
