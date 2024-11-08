@@ -1,15 +1,10 @@
-#ifndef RENDER_H
-#define RENDER_H
+#ifndef __render_h_
+#define __render_h_
 
-#define WIDTH 1000.0f
-#define HEIGHT 1000.0f
-
-struct color { 
-	int r, g, b, a; 
-};
-
-void preRender(); 
-void render(); 
-void setColor(struct color color); 
+void vertexSpec(); 
+void shaderSpec(const char* vertex, const char* fragment); 
+void preDraw(bool culling = true);
+void draw();
+void getInfo(); 
 
 #endif

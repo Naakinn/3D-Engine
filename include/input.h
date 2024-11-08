@@ -1,11 +1,15 @@
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef __input_h_
+#define __input_h_
+
+#ifndef SDL_h_
+#include <SDL2/SDL.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void listenInput(); 
+void checkQuit(); 
 
 #ifdef __cplusplus
 }
