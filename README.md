@@ -1,8 +1,12 @@
-# 3D Engine in C/C++
-![](images/preview.png)
 ![](images/preview2.png)
-## Install dependencies 
-- GLM: https://github.com/g-truc/glm?tab=readme-ov-file#build-and-install
+# Why? 
+For educational purpose.
+## Dependencies 
+### Install system-wide 
+- [GLM](https://github.com/g-truc/glm?tab=readme-ov-file#build-and-install)
+### Locally
+Just clone git repository of [glm](https://github.com/g-truc/glm?tab=readme-ov-file#build-and-install) and put `glm` directory in engine's `include` directory
+
 ## Build
 ```
 $ cmake -B build
