@@ -28,7 +28,8 @@ GLuint vertexNumber;
 GLuint elementNumber;
 
 // Perspective
-const float aspect = (float)HEIGHT / (float)WIDTH;
+const float aspect = (float)WIDTH / (float)HEIGHT;
+const float absoluteScale = (float)SCALE_FACTOR / (float)(WIDTH + HEIGHT);
 const float fov = 45.0f;
 
 float zOffset = 0.0f;
@@ -134,16 +135,18 @@ void draw() {
     static float rotationAngleY = 0.0f;
 
     // Retrieve uniforms' locations
-    struct glUniformMatrix uTranslation, uPerspective, uRotation;
+    struct glUniformMatrix uTranslation, uPerspective, uRotation, uScale;
     uRotation.name = "uRotation";
     uTranslation.name = "uTranslation";
     uPerspective.name = "uPerspective";
+    uScale.name = "uScale";
     uTranslation.location =
         glGetUniformLocation(glPipeLineProgram, uTranslation.name);
     uPerspective.location =
         glGetUniformLocation(glPipeLineProgram, uPerspective.name);
     uRotation.location =
         glGetUniformLocation(glPipeLineProgram, uRotation.name);
+    uScale.location = glGetUniformLocation(glPipeLineProgram, uScale.name);
 
     // Check locations
     if (uTranslation.location < 0) {
@@ -161,6 +164,11 @@ void draw() {
                uRotation.name, uRotation.location);
         quit();
     }
+    if (uScale.location < 0) {
+        printf("[ERROR] Couldn't find uniform `%s`, location: %d\n",
+               uScale.name, uScale.location);
+        quit();
+    }
 
     rotationAngleX += 1.0f;
     rotationAngleY += 1.0f;
@@ -168,14 +176,15 @@ void draw() {
     // Build matrices
     glm::mat4 translate =
         glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, zOffset - 3.0f));
-    glm::mat4 perspective = glm::perspective(
-        glm::radians(fov), (float)WIDTH / (float)HEIGHT, NEAR, FAR);
+    glm::mat4 perspective =
+        glm::perspective(glm::radians(fov), aspect, NEAR, FAR);
     glm::mat4 rotationY =
         glm::rotate(glm::mat4(1.0f), glm::radians(rotationAngleY),
                     glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 rotationX =
         glm::rotate(glm::mat4(1.0f), glm::radians(rotationAngleX),
                     glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(absoluteScale));
 
     glm::mat4 rotation = rotationY * rotationX;
 
@@ -183,6 +192,7 @@ void draw() {
     glUniformMatrix4fv(uRotation.location, 1, GL_FALSE, &rotation[0][0]);
     glUniformMatrix4fv(uTranslation.location, 1, GL_FALSE, &translate[0][0]);
     glUniformMatrix4fv(uPerspective.location, 1, GL_FALSE, &perspective[0][0]);
+    glUniformMatrix4fv(uScale.location, 1, GL_FALSE, &scale[0][0]);
 
     // Draw
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
