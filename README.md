@@ -6,7 +6,10 @@ For educational purpose.
 - [GLM](https://github.com/g-truc/glm?tab=readme-ov-file#build-and-install)
 ### Locally
 Just clone git repository of [glm](https://github.com/g-truc/glm?tab=readme-ov-file#build-and-install) and put `glm` directory in engine's `include` directory
-
+```
+cd path/to/glm
+mv glm path/to/project/include
+```
 ## Build
 ```
 $ cmake -B build
