@@ -19,24 +19,18 @@ int main() {
 
     getInfo();
 
-    uint8_t do_render = 1;
-    const Uint8* state = NULL;
+    int8_t do_render = 1;
 
     while (1) {
         // Listen input
-        checkQuit();
-
-        state = SDL_GetKeyboardState(NULL);
-        if (state[SDL_SCANCODE_SPACE]) {
-            do_render = ~do_render;
+        if (listenInput(SDL_SCANCODE_SPACE)) {
+            do_render = !do_render;
         }
-
         if (do_render) {
             draw();
+            // Update window
+            SDL_GL_SwapWindow(glWindow);
         }
-        // Update window
-        SDL_GL_SwapWindow(glWindow);
-
         SDL_Delay(16);
     }
     return 0;
