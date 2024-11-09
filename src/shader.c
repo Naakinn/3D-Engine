@@ -3,12 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "init.h"
+
 char* loadShader(const char* filepath) {
     FILE* istream = fopen(filepath, "r");
 
     if (istream == NULL) {
-        printf("error occured while opening shader file\n");
-        exit(1);
+        printf("[ERROR] Couldn't open file %s\n", filepath);
+        quit(); 
     }
 
     size_t size;
@@ -19,8 +21,9 @@ char* loadShader(const char* filepath) {
     char* shaderSource = (char*)malloc(size * sizeof(char) + 1);
 
     if (shaderSource == NULL) {
-        printf("malloc err\n");
-        exit(1);
+        printf("[ERROR] Allocation error, size: %lu bytes, at line %d",
+               size * sizeof(char), __LINE__);
+        quit();
     }
 
     rewind(istream);
