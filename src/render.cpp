@@ -29,7 +29,7 @@ GLuint elementNumber;
 
 // Perspective
 const float aspect = (float)WIDTH / (float)HEIGHT;
-const float absoluteScale = (float)SCALE_FACTOR / (float)(WIDTH + HEIGHT);
+const float absoluteScale = (float)SCALE_FACTOR / (float)(HEIGHT < WIDTH ? HEIGHT : WIDTH);
 const float fov = 45.0f;
 
 float zOffset = 0.0f;
