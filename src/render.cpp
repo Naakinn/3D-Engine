@@ -29,10 +29,11 @@ GLuint elementNumber;
 
 // Perspective
 const float aspect = (float)WIDTH / (float)HEIGHT;
-const float absoluteScale = (float)SCALE_FACTOR / (float)(HEIGHT < WIDTH ? HEIGHT : WIDTH);
+const float absoluteScale =
+    (float)SCALE_FACTOR / (float)(HEIGHT < WIDTH ? HEIGHT : WIDTH);
 const float fov = 45.0f;
 
-float zOffset = 0.0f;
+static struct glUniformMatrix uTranslation, uPerspective, uRotation, uScale;
 
 void vertexSpec() {
     // clang-format off
@@ -128,17 +129,11 @@ void preDraw(bool culling) {
     glDisable(GL_DEPTH_TEST);
     glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-}
-
-void draw() {
-    static float rotationAngleX = 0.0f;
-    static float rotationAngleY = 0.0f;
 
     // Retrieve uniforms' locations
-    struct glUniformMatrix uTranslation, uPerspective, uRotation, uScale;
     uRotation.name = "uRotation";
     uTranslation.name = "uTranslation";
-    uPerspective.name = "uPerspective";
+    uPerspective.name = "uProjection";
     uScale.name = "uScale";
     uTranslation.location =
         glGetUniformLocation(glPipeLineProgram, uTranslation.name);
@@ -168,6 +163,21 @@ void draw() {
         printf("[ERROR] Couldn't find uniform `%s`, location: %d\n",
                uScale.name, uScale.location);
         quit();
+    }
+}
+
+void draw() {
+    static float rotationAngleX = 0.0f;
+    static float rotationAngleY = 0.0f;
+    static float zOffset = 0.0f;
+
+    // Listen input
+    const Uint8* state = SDL_GetKeyboardState(NULL);
+    if (state[SDL_SCANCODE_W]) {
+        zOffset += 0.01f;
+    }
+    if (state[SDL_SCANCODE_S]) {
+        zOffset -= 0.01f;
     }
 
     rotationAngleX += 1.0f;

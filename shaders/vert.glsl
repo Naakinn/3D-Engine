@@ -1,21 +1,21 @@
 #version 410 core
 
-layout(location = 0) in vec3 position; 
-layout(location = 1) in vec3 vertexColors; 
+layout(location = 0) in vec3 aPosition; 
+layout(location = 1) in vec3 aColor; 
 
-out vec3 v_vertexColors; 
+out vec3 color; 
 
-uniform mat4 uTranslation; // zOffset
-uniform mat4 uPerspective; 
+// world space
 uniform mat4 uRotation; 
+uniform mat4 uProjection; 
+// view space 
+uniform mat4 uTranslation; 
+// screen space
 uniform mat4 uScale; 
 
 void main()
 {
-	v_vertexColors = vertexColors; 
-
-	vec4 newPosition = uScale * uPerspective * uTranslation * uRotation * vec4(position, 1.0f); 
-	
-	gl_Position = newPosition;
+	gl_Position = uScale * uProjection * uTranslation * uRotation * vec4(aPosition, 1.0f); 
+	color = aColor; 
 }
 
