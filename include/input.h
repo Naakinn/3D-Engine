@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-int listenInput(const int scancode);
+int listenEvents(const int scancode);
 void checkQuit(); 
 
 #ifdef __cplusplus

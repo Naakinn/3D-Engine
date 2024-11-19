@@ -22,8 +22,8 @@ int main() {
     int8_t do_render = 1;
 
     while (1) {
-        // Listen input
-        if (listenInput(SDL_SCANCODE_SPACE)) {
+        // Listen events
+        if (listenEvents(SDL_SCANCODE_SPACE)) {
             do_render = !do_render;
         }
         if (do_render) {

@@ -11,7 +11,7 @@ int handleKeyUp(SDL_KeyboardEvent* event, const int scancode) {
     return 0;
 }
 
-int listenInput(const int scancode) {
+int listenEvents(const int scancode) {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
