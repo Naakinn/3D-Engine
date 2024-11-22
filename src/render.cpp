@@ -33,7 +33,7 @@ const float absoluteScale =
     (float)SCALE_FACTOR / (float)(HEIGHT < WIDTH ? HEIGHT : WIDTH);
 const float fov = 45.0f;
 
-static struct glUniformMatrix uTranslation, uPerspective, uRotation, uScale;
+static struct glUniformMatrix uTranslation, uProjection, uRotation, uScale;
 
 void vertexSpec() {
     // clang-format off
@@ -133,12 +133,12 @@ void preDraw(bool culling) {
     // Retrieve uniforms' locations
     uRotation.name = "uRotation";
     uTranslation.name = "uTranslation";
-    uPerspective.name = "uProjection";
+    uProjection.name = "projection";
     uScale.name = "uScale";
     uTranslation.location =
         glGetUniformLocation(glPipeLineProgram, uTranslation.name);
-    uPerspective.location =
-        glGetUniformLocation(glPipeLineProgram, uPerspective.name);
+    uProjection.location =
+        glGetUniformLocation(glPipeLineProgram, uProjection.name);
     uRotation.location =
         glGetUniformLocation(glPipeLineProgram, uRotation.name);
     uScale.location = glGetUniformLocation(glPipeLineProgram, uScale.name);
@@ -149,9 +149,9 @@ void preDraw(bool culling) {
                uTranslation.name, uTranslation.location);
         quit();
     }
-    if (uPerspective.location < 0) {
+    if (uProjection.location < 0) {
         printf("[ERROR] Couldn't find uniform `%s`, location: %d\n",
-               uPerspective.name, uPerspective.location);
+               uProjection.name, uProjection.location);
         quit();
     }
     if (uRotation.location < 0) {
@@ -174,10 +174,10 @@ void draw() {
     // Listen input
     const Uint8* state = SDL_GetKeyboardState(NULL);
     if (state[SDL_SCANCODE_W]) {
-        zOffset += 0.01f;
+        zOffset -= 0.01f;
     }
     if (state[SDL_SCANCODE_S]) {
-        zOffset -= 0.01f;
+        zOffset += 0.01f;
     }
 
     rotationAngleX += 1.0f;
@@ -186,8 +186,10 @@ void draw() {
     // Build matrices
     glm::mat4 translate =
         glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, zOffset - 3.0f));
-    glm::mat4 perspective =
-        glm::perspective(glm::radians(fov), aspect, NEAR, FAR);
+    glm::mat4 projection =
+		glm::perspective(glm::radians(fov), aspect, NEAR, FAR);
+		// glm::ortho(1.0f, -1.0f, 1.0f, -1.0f, FAR, NEAR);
+	
     glm::mat4 rotationY =
         glm::rotate(glm::mat4(1.0f), glm::radians(rotationAngleY),
                     glm::vec3(0.0f, 1.0f, 0.0f));
@@ -201,7 +203,7 @@ void draw() {
     // Set uniforms
     glUniformMatrix4fv(uRotation.location, 1, GL_FALSE, &rotation[0][0]);
     glUniformMatrix4fv(uTranslation.location, 1, GL_FALSE, &translate[0][0]);
-    glUniformMatrix4fv(uPerspective.location, 1, GL_FALSE, &perspective[0][0]);
+    glUniformMatrix4fv(uProjection.location, 1, GL_FALSE, &projection[0][0]);
     glUniformMatrix4fv(uScale.location, 1, GL_FALSE, &scale[0][0]);
 
     // Draw
