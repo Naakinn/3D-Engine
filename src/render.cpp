@@ -33,7 +33,8 @@ const float absoluteScale =
     (float)SCALE_FACTOR / (float)(HEIGHT < WIDTH ? HEIGHT : WIDTH);
 const float fov = 45.0f;
 
-static struct glUniformMatrix uTranslation, uProjection, uRotation, uScale;
+static struct glUniformMatrix uTranslation, uProjection, uRotation, uScale,
+    uTime;
 
 void vertexSpec() {
     // clang-format off
@@ -135,6 +136,7 @@ void preDraw(bool culling) {
     uTranslation.name = "uTranslation";
     uProjection.name = "projection";
     uScale.name = "uScale";
+    uTime.name = "uTime";
     uTranslation.location =
         glGetUniformLocation(glPipeLineProgram, uTranslation.name);
     uProjection.location =
@@ -142,6 +144,7 @@ void preDraw(bool culling) {
     uRotation.location =
         glGetUniformLocation(glPipeLineProgram, uRotation.name);
     uScale.location = glGetUniformLocation(glPipeLineProgram, uScale.name);
+    uTime.location = glGetUniformLocation(glPipeLineProgram, uTime.name);
 
     // Check locations
     if (uTranslation.location < 0) {
@@ -164,12 +167,18 @@ void preDraw(bool culling) {
                uScale.name, uScale.location);
         quit();
     }
+    if (uTime.location < 0) {
+        printf("[ERROR] Couldn't find uniform `%s`, location: %d\n", uTime.name,
+               uTime.location);
+        quit();
+    }
 }
 
 void draw() {
     static float rotationAngleX = 0.0f;
     static float rotationAngleY = 0.0f;
     static float zOffset = 0.0f;
+    float time;
 
     // Listen input
     const Uint8* state = SDL_GetKeyboardState(NULL);
@@ -187,9 +196,9 @@ void draw() {
     glm::mat4 translate =
         glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, zOffset - 3.0f));
     glm::mat4 projection =
-		glm::perspective(glm::radians(fov), aspect, NEAR, FAR);
-		// glm::ortho(1.0f, -1.0f, 1.0f, -1.0f, FAR, NEAR);
-	
+        glm::perspective(glm::radians(fov), aspect, NEAR, FAR);
+    // glm::ortho(1.0f, -1.0f, 1.0f, -1.0f, FAR, NEAR);
+
     glm::mat4 rotationY =
         glm::rotate(glm::mat4(1.0f), glm::radians(rotationAngleY),
                     glm::vec3(0.0f, 1.0f, 0.0f));
@@ -205,6 +214,10 @@ void draw() {
     glUniformMatrix4fv(uTranslation.location, 1, GL_FALSE, &translate[0][0]);
     glUniformMatrix4fv(uProjection.location, 1, GL_FALSE, &projection[0][0]);
     glUniformMatrix4fv(uScale.location, 1, GL_FALSE, &scale[0][0]);
+
+    // Update uTime uniform
+    time = SDL_GetTicks() / 1000.0f;
+    glUniform1f(uTime.location, time);
 
     // Draw
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
