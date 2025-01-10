@@ -13,16 +13,15 @@
 #include "settings.h"
 #include "shader.h"
 
-extern SDL_Window* glWindow;
-
 // VAO
 GLuint glVAO = 0;
 // VBO
-glVBOVertex_t glVBOVertex = {0, 0, 1};
+VBO glVBOVertex = {0, 0, 1};
 // EBO
 GLuint glEBO = 0;
 // Grapshics pipeline shader program
 GLuint glPipeLineProgram = 0;
+#define GLPIPELINEPROGRAM glPipeLineProgram
 
 GLuint vertexNumber;
 GLuint elementNumber;
@@ -33,8 +32,8 @@ const float absoluteScale =
     (float)SCALE_FACTOR / (float)(HEIGHT < WIDTH ? HEIGHT : WIDTH);
 const float fov = 45.0f;
 
-static struct glUniformMatrix uTranslation, uProjection, uRotation, uScale,
-    uTime;
+static Uniform uTranslation, uProjection, uRotation, uScale;
+// static Uniform uTime; 
 
 void vertexSpec() {
     // clang-format off
@@ -120,6 +119,15 @@ void getInfo() {
            glGetString(GL_SHADING_LANGUAGE_VERSION));
 }
 
+int checkUniform(const Uniform* u) {
+    if (u->location < 0) {
+        fprintf(stderr, "[ERROR] Couldn't find uniform `%s`, location: %d\n",
+                u->name, u->location);
+        quit();
+    }
+    return 0;
+}
+
 void preDraw(bool culling) {
     if (culling) {
         glEnable(GL_CULL_FACE);
@@ -131,54 +139,30 @@ void preDraw(bool culling) {
     glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-    // Retrieve uniforms' locations
-    uRotation.name = "uRotation";
-    uTranslation.name = "uTranslation";
-    uProjection.name = "projection";
-    uScale.name = "uScale";
-    uTime.name = "uTime";
-    uTranslation.location =
-        glGetUniformLocation(glPipeLineProgram, uTranslation.name);
-    uProjection.location =
-        glGetUniformLocation(glPipeLineProgram, uProjection.name);
-    uRotation.location =
-        glGetUniformLocation(glPipeLineProgram, uRotation.name);
-    uScale.location = glGetUniformLocation(glPipeLineProgram, uScale.name);
-    uTime.location = glGetUniformLocation(glPipeLineProgram, uTime.name);
+	setUniformName(uTranslation);
+	setUniformName(uProjection);
+	setUniformName(uRotation);
+	setUniformName(uScale);
+	// setUniformName(uTime);
+	
+	setUniformLocation(uTranslation);
+	setUniformLocation(uProjection);
+	setUniformLocation(uRotation);
+	setUniformLocation(uScale);
+	// setUniformLocation(uTime);
 
-    // Check locations
-    if (uTranslation.location < 0) {
-        printf("[ERROR] Couldn't find uniform `%s`, location: %d\n",
-               uTranslation.name, uTranslation.location);
-        quit();
-    }
-    if (uProjection.location < 0) {
-        printf("[ERROR] Couldn't find uniform `%s`, location: %d\n",
-               uProjection.name, uProjection.location);
-        quit();
-    }
-    if (uRotation.location < 0) {
-        printf("[ERROR] Couldn't find uniform `%s`, location: %d\n",
-               uRotation.name, uRotation.location);
-        quit();
-    }
-    if (uScale.location < 0) {
-        printf("[ERROR] Couldn't find uniform `%s`, location: %d\n",
-               uScale.name, uScale.location);
-        quit();
-    }
-    if (uTime.location < 0) {
-        printf("[ERROR] Couldn't find uniform `%s`, location: %d\n", uTime.name,
-               uTime.location);
-        quit();
-    }
+    if (checkUniform(&uTranslation) != 0) quit();
+    if (checkUniform(&uProjection) != 0) quit();
+    if (checkUniform(&uRotation) != 0) quit();
+    if (checkUniform(&uScale) != 0) quit();
+    // if (checkUniform(&uTime) != 0) quit();
 }
 
 void draw() {
     static float rotationAngleX = 0.0f;
     static float rotationAngleY = 0.0f;
     static float zOffset = 0.0f;
-    float time;
+    // float time;
 
     // Listen input
     const Uint8* state = SDL_GetKeyboardState(NULL);
@@ -216,8 +200,8 @@ void draw() {
     glUniformMatrix4fv(uScale.location, 1, GL_FALSE, &scale[0][0]);
 
     // Update uTime uniform
-    time = SDL_GetTicks() / 1000.0f;
-    glUniform1f(uTime.location, time);
+    // time = SDL_GetTicks() / 1000.0f;
+    // glUniform1f(uTime.location, time);
 
     // Draw
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);

@@ -9,7 +9,7 @@
 
 extern SDL_GLContext* glContext;
 extern SDL_Window* glWindow;
-extern glVBOVertex_t glVBOVertex;
+extern VBO glVBOVertex;
 extern GLuint glEBO;
 extern GLuint glVAO;
 

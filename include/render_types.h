@@ -12,15 +12,18 @@
 #define FAR 10.0f
 #define NEAR 0.1f
 
-typedef struct VBOVertex {
-    GLuint name;     // VBO name
-    GLuint vertIdx;  // Index of the generic vertex attribute for vertices
-    GLuint colIdx;   // Index of the generic vertex attribute for color
-} glVBOVertex_t;
+#define setUniformName(u) u.name = #u
+#define setUniformLocation(u) u.location = glGetUniformLocation(GLPIPELINEPROGRAM, u.name)
 
-typedef struct glUniformMatrix {
+typedef struct {
+    GLuint name;  
+    GLuint vertIdx;  // Index of the generic vertex attribute for vertices(layout)
+    GLuint colIdx;   // Index of the generic vertex attribute for color(layout)
+} VBO;
+
+typedef struct {
     GLint location;
     const char* name;
-} glUniformMatrix_t;
+} Uniform;
 
 #endif
