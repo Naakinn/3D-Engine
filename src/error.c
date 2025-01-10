@@ -5,7 +5,7 @@
 void glGetErrorStatus(const char* function, unsigned int line) {
     GLenum err = 0;
     while ((err = glGetError()) != GL_NO_ERROR) {
-        printf("[ERROR] Error code: %d, at line %u, in `%s`\n", err, line,
+        fprintf(stderr, "[ERROR] Error code: %d, at line %u, in `%s`\n", err, line,
                function);
         return;
     }

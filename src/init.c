@@ -15,7 +15,7 @@ extern GLuint glVAO;
 
 int init(const char* title, int width, int height) {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        printf("[ERROR] SDL_Init: %s\n", SDL_GetError());
+        fprintf(stderr, "[ERROR] SDL_Init: %s\n", SDL_GetError());
         return 1;
     }
 
@@ -28,18 +28,18 @@ int init(const char* title, int width, int height) {
 
     glWindow = SDL_CreateWindow(title, 0, 0, width, height, SDL_WINDOW_OPENGL);
     if (glWindow == NULL) {
-        printf("[ERROR] SDL_CreateWindow: %s\n", SDL_GetError());
+        fprintf(stderr, "[ERROR] SDL_CreateWindow: %s\n", SDL_GetError());
         return 1;
     }
 
     glContext = (SDL_GLContext*)SDL_GL_CreateContext(glWindow);
     if (glContext == NULL) {
-        printf("[ERROR] SDL_GL_CreateContext: %s\n", SDL_GetError());
+        fprintf(stderr, "[ERROR] SDL_GL_CreateContext: %s\n", SDL_GetError());
         return 1;
     }
 
     if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
-        printf("[ERROR] Glad Load Error\n");
+        fprintf(stderr, "[ERROR] Glad Load Error\n");
         return 1;
     }
 

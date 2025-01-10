@@ -9,7 +9,7 @@ char* loadShader(const char* filepath) {
     FILE* istream = fopen(filepath, "r");
 
     if (istream == NULL) {
-        printf("[ERROR] Couldn't open file %s\n", filepath);
+        fprintf(stderr, "[ERROR] Couldn't open file %s\n", filepath);
         quit(); 
     }
 
@@ -21,7 +21,7 @@ char* loadShader(const char* filepath) {
     char* shaderSource = (char*)malloc(size * sizeof(char) + 1);
 
     if (shaderSource == NULL) {
-        printf("[ERROR] Allocation error, size: %lu bytes, at line %d",
+        fprintf(stderr, "[ERROR] Allocation error, size: %lu bytes, at line %d",
                size * sizeof(char), __LINE__);
         quit();
     }
