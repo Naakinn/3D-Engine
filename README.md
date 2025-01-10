@@ -1,3 +1,6 @@
+> [!WARNING]
+> Highly beta, PRs are allowed.
+
 ![](images/preview2.png)
 # Hvat?
 This is a basic 3D engine implemented in C and C++. It works with [OpenGL Graphics API](https://learnopengl.com/Getting-started/OpenGL) and uses [Glad](https://glad.dav1d.de/) loader. 
@@ -5,13 +8,11 @@ This is a basic 3D engine implemented in C and C++. It works with [OpenGL Graphi
 System API(creating windows, etc.) comes with [SDL2 library](https://www.libsdl.org/). 
 
 # Why? 
-For educational purpose. Also I found myself fond of 3D graphics and think I will be working in this subject later. 
+Educational purpose. 3D graphics is pretty cool.
 
 # Dependencies
 - [GLM](https://github.com/g-truc/glm)
   - System wide [here](https://github.com/g-truc/glm?tab=readme-ov-file#build-and-install)
-  
-  Or
   - Locally
   
     Just clone git repository of [glm](https://github.com/g-truc/glm) and put `glm` directory inside engine's `include` directory
