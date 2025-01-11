@@ -4,13 +4,14 @@
 #include <stdlib.h>
 
 #include "init.h"
+#include "qlog.h"
 
 char* loadShader(const char* filepath) {
     FILE* istream = fopen(filepath, "r");
 
     if (istream == NULL) {
-        fprintf(stderr, "[ERROR] Couldn't open file %s\n", filepath);
-        quit(); 
+        QLOGF(qlERROR, "[ERROR] Couldn't open file %s\n", filepath);
+        quit();
     }
 
     size_t size;
@@ -21,8 +22,8 @@ char* loadShader(const char* filepath) {
     char* shaderSource = (char*)malloc(size * sizeof(char) + 1);
 
     if (shaderSource == NULL) {
-        fprintf(stderr, "[ERROR] Allocation error, size: %lu bytes, at line %d",
-               size * sizeof(char), __LINE__);
+        QLOGF(qlERROR, "[ERROR] Allocation error, size: %zu bytes",
+              size * sizeof(char));
         quit();
     }
 

@@ -1,6 +1,7 @@
 #include "init.h"
 
 #include "glad/glad.h"
+#include "qlog.h"
 #include "render_types.h"
 
 #ifdef DEBUG
@@ -15,7 +16,7 @@ extern GLuint glVAO;
 
 int init(const char* title, int width, int height) {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        fprintf(stderr, "[ERROR] SDL_Init: %s\n", SDL_GetError());
+        QLOGF(qlERROR, "SDL_Init: %s\n", SDL_GetError());
         return 1;
     }
 
@@ -28,23 +29,23 @@ int init(const char* title, int width, int height) {
 
     glWindow = SDL_CreateWindow(title, 0, 0, width, height, SDL_WINDOW_OPENGL);
     if (glWindow == NULL) {
-        fprintf(stderr, "[ERROR] SDL_CreateWindow: %s\n", SDL_GetError());
+        QLOGF(qlERROR, "SDL_CreateWindow: %s\n", SDL_GetError());
         return 1;
     }
 
     glContext = (SDL_GLContext*)SDL_GL_CreateContext(glWindow);
     if (glContext == NULL) {
-        fprintf(stderr, "[ERROR] SDL_GL_CreateContext: %s\n", SDL_GetError());
+        QLOGF(qlERROR, "SDL_GL_CreateContext: %s\n", SDL_GetError());
         return 1;
     }
 
     if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
-        fprintf(stderr, "[ERROR] Glad Load Error\n");
+        QLOGF(qlERROR, "Glad Load Error\n");
         return 1;
     }
 
 #ifdef DEBUG
-    printf("[INFO] Running in debug mode\n");
+    QLOGF(qlDEBUG, "Running in debug mode\n");
     glCheckCall(glEnable(GL_DEBUG_OUTPUT));
     glDebugMessageCallback(messageCallback, 0);
 #endif

@@ -9,6 +9,7 @@
 #include <glm/vec3.hpp>
 
 #include "init.h"
+#include "qlog.h"
 #include "render_types.h"
 #include "settings.h"
 #include "shader.h"
@@ -33,7 +34,7 @@ const float absoluteScale =
 const float fov = 45.0f;
 
 static Uniform uTranslation, uProjection, uRotation, uScale;
-// static Uniform uTime; 
+// static Uniform uTime;
 
 void vertexSpec() {
     // clang-format off
@@ -69,8 +70,7 @@ void vertexSpec() {
     vertexNumber = sizeof(vertexData) / sizeof(GLfloat) / VERTEXSIZE;
     elementNumber = sizeof(elementData) / sizeof(GLuint);
 
-    // elementNumber = sizeof(elementData) / sizeof(GLuint);
-    printf("[INFO] Number of vertices: %u\n", vertexNumber);
+    QLOGF(qlINFO, "Number of vertices: %u\n", vertexNumber);
 
     // Generate VAO
     glGenVertexArrays(1, &glVAO);
@@ -112,17 +112,17 @@ void shaderSpec(const char* vertex, const char* fragment) {
 }
 
 void getInfo() {
-    printf("[INFO] Vendor: %s\n", glGetString(GL_VENDOR));
-    printf("[INFO] Renderer: %s\n", glGetString(GL_RENDERER));
-    printf("[INFO] Version: %s\n", glGetString(GL_VERSION));
-    printf("[INFO] Shading language: %s\n",
+    QLOGF(qlINFO, "Vendor: %s\n", glGetString(GL_VENDOR));
+    QLOGF(qlINFO, "Renderer: %s\n", glGetString(GL_RENDERER));
+    QLOGF(qlINFO, "Version: %s\n", glGetString(GL_VERSION));
+    QLOGF(qlINFO, "Shading language: %s\n",
            glGetString(GL_SHADING_LANGUAGE_VERSION));
 }
 
 int checkUniform(const Uniform* u) {
     if (u->location < 0) {
-        fprintf(stderr, "[ERROR] Couldn't find uniform `%s`, location: %d\n",
-                u->name, u->location);
+        QLOGF(qlERROR, "Couldn't find uniform `%s`, location: %d\n", u->name,
+              u->location);
         quit();
     }
     return 0;
@@ -139,17 +139,17 @@ void preDraw(bool culling) {
     glViewport(0, 0, WIDTH, HEIGHT);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	setUniformName(uTranslation);
-	setUniformName(uProjection);
-	setUniformName(uRotation);
-	setUniformName(uScale);
-	// setUniformName(uTime);
-	
-	setUniformLocation(uTranslation);
-	setUniformLocation(uProjection);
-	setUniformLocation(uRotation);
-	setUniformLocation(uScale);
-	// setUniformLocation(uTime);
+    setUniformName(uTranslation);
+    setUniformName(uProjection);
+    setUniformName(uRotation);
+    setUniformName(uScale);
+    // setUniformName(uTime);
+
+    setUniformLocation(uTranslation);
+    setUniformLocation(uProjection);
+    setUniformLocation(uRotation);
+    setUniformLocation(uScale);
+    // setUniformLocation(uTime);
 
     if (checkUniform(&uTranslation) != 0) quit();
     if (checkUniform(&uProjection) != 0) quit();

@@ -19,6 +19,7 @@ set(SRC
 	${PROJECT_SOURCE_DIR}/src/init.c
 	${PROJECT_SOURCE_DIR}/src/input.c
 	${PROJECT_SOURCE_DIR}/src/shader.c
+	${PROJECT_SOURCE_DIR}/src/qlog.c
 	)
 
 if(USE_LINKER_MOLD) 
