@@ -8,12 +8,11 @@ set(EXECUTABLE_NAME engine)
 option(USE_LINKER_MOLD "Use mold linker instead of standard gnu ld" ON)
 option(DEBUG "Build in debug output mode" OFF)
 
-find_package(glm CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 
 set(SRC 
-	${PROJECT_SOURCE_DIR}/src/main.cpp
-	${PROJECT_SOURCE_DIR}/src/render.cpp
+	${PROJECT_SOURCE_DIR}/src/main.c
+	${PROJECT_SOURCE_DIR}/src/render.c
 	${PROJECT_SOURCE_DIR}/src/error.c
 	${PROJECT_SOURCE_DIR}/src/glad.c
 	${PROJECT_SOURCE_DIR}/src/init.c
@@ -37,8 +36,8 @@ target_compile_options(${EXECUTABLE_NAME} PRIVATE -Wall)
 
 target_include_directories(${EXECUTABLE_NAME} PUBLIC 
 	${PROJECT_SOURCE_DIR}/include 
+	${PROJECT_SOURCE_DIR}/external/cglm/include
 	/usr/local/include/SDL2/
 )
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE glm::glm)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE SDL2)
-
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE m)

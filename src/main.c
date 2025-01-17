@@ -2,7 +2,7 @@
 
 #include "init.h"
 #include "input.h"
-#include "render.hpp"
+#include "render.h"
 #include "settings.h"
 
 SDL_Window* glWindow = NULL;
@@ -15,7 +15,7 @@ int main() {
 
     vertexSpec();
     shaderSpec("shaders/vert.glsl", "shaders/frag.glsl");
-    preDraw();
+    preDraw(true);
 
     getInfo();
 

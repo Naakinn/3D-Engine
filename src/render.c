@@ -1,12 +1,8 @@
-#include "render.hpp"
+#include "render.h"
 
+#include <cglm/cglm.h>
 #include <glad/glad.h>
 #include <stdio.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
 
 #include "init.h"
 #include "qlog.h"
@@ -33,7 +29,7 @@ const float absoluteScale =
     (float)SCALE_FACTOR / (float)(HEIGHT < WIDTH ? HEIGHT : WIDTH);
 const float fov = 45.0f;
 
-static Uniform uTranslation, uProjection, uRotation, uScale;
+static Uniform uTranslation, uProjection, uRotation /*, uScale */;
 // static Uniform uTime;
 
 void vertexSpec() {
@@ -116,7 +112,7 @@ void getInfo() {
     QLOGF(qlINFO, "Renderer: %s\n", glGetString(GL_RENDERER));
     QLOGF(qlINFO, "Version: %s\n", glGetString(GL_VERSION));
     QLOGF(qlINFO, "Shading language: %s\n",
-           glGetString(GL_SHADING_LANGUAGE_VERSION));
+          glGetString(GL_SHADING_LANGUAGE_VERSION));
 }
 
 int checkUniform(const Uniform* u) {
@@ -142,21 +138,24 @@ void preDraw(bool culling) {
     setUniformName(uTranslation);
     setUniformName(uProjection);
     setUniformName(uRotation);
-    setUniformName(uScale);
+    // setUniformName(uScale);
     // setUniformName(uTime);
 
     setUniformLocation(uTranslation);
     setUniformLocation(uProjection);
     setUniformLocation(uRotation);
-    setUniformLocation(uScale);
+    // setUniformLocation(uScale);
     // setUniformLocation(uTime);
 
-    if (checkUniform(&uTranslation) != 0) quit();
-    if (checkUniform(&uProjection) != 0) quit();
-    if (checkUniform(&uRotation) != 0) quit();
-    if (checkUniform(&uScale) != 0) quit();
-    // if (checkUniform(&uTime) != 0) quit();
+    if (checkUniform(&uTranslation)) quit();
+    if (checkUniform(&uProjection)) quit();
+    if (checkUniform(&uRotation)) quit();
+    // if (checkUniform(&uScale)) quit();
+    // if (checkUniform(&uTime)) quit();
 }
+
+static mat4 translate, projection, rotationY, rotationX, /* scale, */ rotation;
+// static vec3 absoluteScaleVec;
 
 void draw() {
     static float rotationAngleX = 0.0f;
@@ -176,28 +175,25 @@ void draw() {
     rotationAngleX += 1.0f;
     rotationAngleY += 1.0f;
 
-    // Build matrices
-    glm::mat4 translate =
-        glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, zOffset - 3.0f));
-    glm::mat4 projection =
-        glm::perspective(glm::radians(fov), aspect, NEAR, FAR);
-    // glm::ortho(1.0f, -1.0f, 1.0f, -1.0f, FAR, NEAR);
+    // glm_vec3_make(&absoluteScale, absoluteScaleVec);
 
-    glm::mat4 rotationY =
-        glm::rotate(glm::mat4(1.0f), glm::radians(rotationAngleY),
-                    glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 rotationX =
-        glm::rotate(glm::mat4(1.0f), glm::radians(rotationAngleX),
-                    glm::vec3(1.0f, 0.0f, 0.0f));
-    glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(absoluteScale));
-
-    glm::mat4 rotation = rotationY * rotationX;
+    glm_translate_make(translate, (vec3){0.0f, 0.0f, zOffset - 3.0f});
+    glm_perspective(glm_rad(fov), aspect, NEAR, FAR, projection);
+    glm_rotate_make(rotationY, glm_rad(rotationAngleY),
+                    (vec3){0.0f, 1.0f, 0.0f});
+    glm_rotate_make(rotationX, glm_rad(rotationAngleX),
+                    (vec3){1.0f, 0.0f, 0.0f});
+    // glm_scale_make(scale, absoluteScaleVec);
+    glm_mul(rotationY, rotationX, rotation);
 
     // Set uniforms
-    glUniformMatrix4fv(uRotation.location, 1, GL_FALSE, &rotation[0][0]);
-    glUniformMatrix4fv(uTranslation.location, 1, GL_FALSE, &translate[0][0]);
-    glUniformMatrix4fv(uProjection.location, 1, GL_FALSE, &projection[0][0]);
-    glUniformMatrix4fv(uScale.location, 1, GL_FALSE, &scale[0][0]);
+    glUniformMatrix4fv(uRotation.location, 1, GL_FALSE,
+                       (const GLfloat*)rotation);
+    glUniformMatrix4fv(uTranslation.location, 1, GL_FALSE,
+                       (const GLfloat*)translate);
+    glUniformMatrix4fv(uProjection.location, 1, GL_FALSE,
+                       (const GLfloat*)projection);
+    // glUniformMatrix4fv(uScale.location, 1, GL_FALSE, (const GLfloat*)scale);
 
     // Update uTime uniform
     // time = SDL_GetTicks() / 1000.0f;

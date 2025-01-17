@@ -5,15 +5,7 @@
 #include <SDL2/SDL.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 int listenEvents(const int scancode);
 void checkQuit(); 
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

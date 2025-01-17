@@ -16,10 +16,6 @@
 #define QLOGF(qlLogLevel, format, ...) \
     __qlogf_wrapper(qlLogLevel, __FILE_NAME__, __LINE__, format, ##__VA_ARGS__)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef enum { qlINFO, qlDEBUG, qlWARN, qlERROR } qlEnum;
 
 void __qlogf(qlEnum qlLogLevel, const char* filename, unsigned long line,
@@ -27,9 +23,5 @@ void __qlogf(qlEnum qlLogLevel, const char* filename, unsigned long line,
 
 void __qlogf_wrapper(qlEnum qlLogLevel, const char* filename,
                      unsigned long line, const char* format, ...);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
