@@ -11,22 +11,19 @@ System API(creating windows, etc.) comes with [SDL2 library](https://www.libsdl.
 Educational purpose. 3D graphics is pretty cool.
 
 # Dependencies
-- [GLM](https://github.com/g-truc/glm)
-  - System wide [here](https://github.com/g-truc/glm?tab=readme-ov-file#build-and-install)
-  - Locally
-  
-    Just clone git repository of [glm](https://github.com/g-truc/glm) and put `glm` directory inside engine's `include` directory
-    ```
-    cd path/to/glm
-    mv glm path/to/project/include
-    ```
 - [SDL2](https://wiki.libsdl.org/SDL2/Installation#supported_platforms)
+
 # Build
+Firstly, clone the repository and initialize submodules. 
+```
+$ git clone --recurse-submodules https://github.com/Naakinn/3D-Engine
+```
+Then build it. 
 ```
 $ cmake -B build
 $ cmake --build build 
 ```
-### Build in debug mode
+### Build in debug mode(shows debug output)
 ```
 $ cmake -B build -DDEBUG=ON
 $ cmake --build build 
