@@ -14,22 +14,22 @@ Educational purpose. 3D graphics is pretty cool.
 - [SDL2](https://wiki.libsdl.org/SDL2/Installation#supported_platforms)
 
 # Build
-Firstly, clone the repository and initialize submodules. 
+Firstly, clone the repository and initialize submodules(dependencies, like [cglm](https://github.com/recp/cglm)). 
 ```
 $ git clone --recurse-submodules https://github.com/Naakinn/3D-Engine
 ```
-Then build it. 
+
+Then build and run. 
 ```
-$ cmake -B build
-$ cmake --build build 
+$ make 
+$./engine
 ```
-### Build in debug mode(shows debug output)
+
+### Build in debug mode or with some optimizations (-O2)
 ```
-$ cmake -B build -DDEBUG=ON
-$ cmake --build build 
-```
-# Run 
-```
+$ make DEBUG=ON
+# or 
+$ make OPTIMIZE=ON 
 $ ./engine
 ```
 
