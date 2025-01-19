@@ -11,7 +11,7 @@ CFLAGS := $(INCFLAGS) -MMD -Wall -Wextra
 LDFLAGS := $(shell sdl2-config --cflags --libs)
 LDFLAGS += -lm
 
-DEBUG ?= OFF
+DEBUG ?= ON
 OPTIMIZE ?= OFF
 
 ifeq ($(DEBUG), ON) 
