@@ -1,9 +1,7 @@
 #ifndef __render_private_h
 #define __render_private_h
 
-#ifndef __glad_h_
 #include "glad/glad.h"
-#endif
 
 #define VERTEXSIZE 6
 #define POSSIZE 3

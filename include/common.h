@@ -7,9 +7,7 @@
         goto defer;       \
     } while (0)
 
-#ifndef _STDINT_H
 #include <stdint.h>
-#endif
 
 /*
  * Reads file contents and stores it in `dst` treated like `char` array.

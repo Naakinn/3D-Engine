@@ -1,9 +1,7 @@
 #ifndef __error_h_
 #define __error_h_
 
-#ifndef __glad_h_
 #include "glad/glad.h"
-#endif
 
 #define glCheckCall(x) \
     x;                 \
