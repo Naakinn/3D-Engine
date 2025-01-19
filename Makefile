@@ -1,5 +1,6 @@
 CC = gcc
 TARGET_EXEC := engine
+TARGET_BIN := $(TARGET_EXEC).tar.gz
 SRC_DIR := src
 BUILD_DIR := build
 SRCS := $(shell find $(SRC_DIR) -name '*.c')
@@ -36,5 +37,13 @@ $(BUILD_DIR)/$(SRC_DIR):
 .PHONY: clean
 clean: 
 	rm -rf build $(TARGET_EXEC)
+	rm -f $(TARGET_BIN)
+	
+.PHONY: package
+package: $(TARGET_BIN)
+	
+$(TARGET_BIN): $(TARGET_EXEC)
+	@echo "[INFO] Packaging $(TARGET_EXEC) to $(TARGET_BIN)"
+	tar -czf $(TARGET_BIN) $(TARGET_EXEC)
 	
 -include $(DEPS)

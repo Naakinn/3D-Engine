@@ -1,3 +1,7 @@
-build/
+# build files
+*.tar.gz
 engine
+build/
+
+# cache
 .cache/
