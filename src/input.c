@@ -2,7 +2,7 @@
 
 #include "init.h"
 
-int handleKeyUp(SDL_KeyboardEvent* event, const int scancode) {
+int handleKeyUp(SDL_KeyboardEvent* event, SDL_Scancode scancode) {
     if (event->repeat == 0) {
         if (event->keysym.scancode == scancode) {
             return 1;
@@ -11,7 +11,7 @@ int handleKeyUp(SDL_KeyboardEvent* event, const int scancode) {
     return 0;
 }
 
-int listenEvents(const int scancode) {
+int listenEvents(SDL_Scancode scancode) {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {

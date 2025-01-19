@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <stdio.h>
 
+#include "common.h"
 #include "init.h"
 #include "qlog.h"
 #include "render_types.h"
@@ -100,11 +101,23 @@ void vertexSpec() {
                           VERTEXSIZE * sizeof(GLfloat),
                           (GLvoid*)(POSSIZE * sizeof(GLfloat)));
 }
+
 void shaderSpec(const char* vertex, const char* fragment) {
-    // Load shaders
-    glPipeLineProgram =
-        createShaderProgram(loadShader(vertex), loadShader(fragment));
+    int8_t result = 0;
+	char* vertexSrc = NULL, *fragmentSrc = NULL; 
+	
+    vertexSrc = readFile(vertex);
+    if (vertexSrc == NULL) return_defer(-1);
+    fragmentSrc = readFile(fragment);
+	if (fragmentSrc == NULL) return_defer(-1); 
+
+    glPipeLineProgram = createShaderProgram(vertexSrc, fragmentSrc);
     glUseProgram(glPipeLineProgram);
+
+defer:
+	if (result) QLOGF(qlERROR, "Couldn't read shader file(s) %s, %s\n", vertex, fragment);
+    if (vertexSrc) free(vertexSrc);
+    if (fragmentSrc) free(fragmentSrc);
 }
 
 void getInfo() {

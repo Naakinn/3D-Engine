@@ -5,12 +5,9 @@
 #include "glad/glad.h"
 #endif
 
-char* loadShader(const char* filepath);
-
 GLuint compileShader(GLuint type, const char* source);
 
-GLuint createShaderProgram(const char* vertexShaderSource,
-                           const char* fragmentShaderSource);
+GLuint createShaderProgram(const char* vertexSrc,
+                           const char* fragmentSrc);
 
 #endif
-

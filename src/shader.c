@@ -3,43 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "init.h"
 #include "qlog.h"
 
-char* loadShader(const char* filepath) {
-    FILE* istream = fopen(filepath, "r");
-
-    if (istream == NULL) {
-        QLOGF(qlERROR, "[ERROR] Couldn't open file %s\n", filepath);
-        quit();
-    }
-
-    size_t size;
-    char c;
-    int i;
-
-    for (size = 0; (c = fgetc(istream)) != EOF; ++size);
-    char* shaderSource = (char*)malloc(size * sizeof(char) + 1);
-
-    if (shaderSource == NULL) {
-        QLOGF(qlERROR, "[ERROR] Allocation error, size: %zu bytes",
-              size * sizeof(char));
-        quit();
-    }
-
-    rewind(istream);
-    for (i = 0; (c = fgetc(istream)) != EOF; ++i) {
-        shaderSource[i] = c;
-    }
-
-    shaderSource[i] = '\0';
-
-    fclose(istream);
-    return shaderSource;
-}
-
 GLuint compileShader(GLuint type, const char* source) {
-    GLuint shaderObject;
+    GLuint shaderObject = -1;
     switch (type) {
         case GL_VERTEX_SHADER:
             shaderObject = glCreateShader(GL_VERTEX_SHADER);
@@ -47,25 +14,30 @@ GLuint compileShader(GLuint type, const char* source) {
         case GL_FRAGMENT_SHADER:
             shaderObject = glCreateShader(GL_FRAGMENT_SHADER);
             break;
+		default: 
+			QLOGF(qlERROR, "Couldn't recognise shader type %d\n", type);
+			return shaderObject; 
+			break; 
     }
-    glShaderSource(shaderObject, 1, &source, 0);
+    glShaderSource(shaderObject, 1, &source, NULL);
     glCompileShader(shaderObject);
-    free((void*)source);
+	QLOGF(qlDEBUG, "Compiled shader object %u\n", shaderObject);
     return shaderObject;
 }
 
-GLuint createShaderProgram(const char* vertexShaderSource,
-                           const char* fragmentShaderSource) {
+GLuint createShaderProgram(const char* vertexSrc,
+                           const char* fragmentSrc) {
     GLuint programObject = glCreateProgram();
-    GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource);
+    GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexSrc);
     GLuint fragmentShader =
-        compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+        compileShader(GL_FRAGMENT_SHADER, fragmentSrc);
 
     glAttachShader(programObject, vertexShader);
     glAttachShader(programObject, fragmentShader);
     glLinkProgram(programObject);
 
     glValidateProgram(programObject);
+	QLOGF(qlDEBUG, "Created program shader object %u\n", programObject);
 
     /* Clean up */
     glDeleteShader(vertexShader);
