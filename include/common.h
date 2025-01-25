@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#define EXIT_HELP 2
 /*
  * Reads file contents and stores it in `dst` treated like `char` array.
  * Allocates memory for file named `filepath` contents, caller must free that
