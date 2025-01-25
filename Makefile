@@ -38,7 +38,7 @@ clean:
 	rm -rf build $(TARGET_EXEC)
 	rm -f $(TARGET_BIN)
 	
-format: $(SRCS)
+format: $(subst src/glad.c,,$(SRCS))
 	@echo "[INFO] Formatting files $?"
 	clang-format -i $?
 	touch format
