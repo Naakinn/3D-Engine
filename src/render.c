@@ -33,6 +33,9 @@ const float fov = 45.0f;
 static Uniform uTranslation, uProjection, uRotation /*, uScale */;
 // static Uniform uTime;
 
+static mat4 translate, projection, rotationY, rotationX, /* scale, */ rotation;
+// static vec3 absoluteScaleVec;
+
 void vertexSpec() {
     // clang-format off
     const GLfloat vertexData[] = {
@@ -104,18 +107,20 @@ void vertexSpec() {
 
 void shaderSpec(const char* vertex, const char* fragment) {
     int8_t result = 0;
-	char* vertexSrc = NULL, *fragmentSrc = NULL; 
-	
+    char *vertexSrc = NULL, *fragmentSrc = NULL;
+
     vertexSrc = readFile(vertex);
     if (vertexSrc == NULL) return_defer(-1);
     fragmentSrc = readFile(fragment);
-	if (fragmentSrc == NULL) return_defer(-1); 
+    if (fragmentSrc == NULL) return_defer(-1);
 
     glPipeLineProgram = createShaderProgram(vertexSrc, fragmentSrc);
     glUseProgram(glPipeLineProgram);
 
 defer:
-	if (result) QLOGF(qlERROR, "Couldn't read shader file(s) %s, %s\n", vertex, fragment);
+    if (result)
+        QLOGF(qlERROR, "Couldn't read shader file(s) %s, %s\n", vertex,
+              fragment);
     if (vertexSrc) free(vertexSrc);
     if (fragmentSrc) free(fragmentSrc);
 }
@@ -166,9 +171,6 @@ void preDraw(bool culling) {
     // if (checkUniform(&uScale)) quit();
     // if (checkUniform(&uTime)) quit();
 }
-
-static mat4 translate, projection, rotationY, rotationX, /* scale, */ rotation;
-// static vec3 absoluteScaleVec;
 
 void draw() {
     static float rotationAngleX = 0.0f;

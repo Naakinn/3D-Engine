@@ -27,7 +27,6 @@ $(TARGET_EXEC): $(OBJS)
 	@echo "[INFO] CFLAGS is $(CFLAGS)"
 	$(CC) -o $@ $(OBJS) $(LDFLAGS)
 	
-# $(OBJS): $(SRCS) $(BUILD_DIR)/$(SRC_DIR)
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)/$(SRC_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 	
@@ -38,6 +37,11 @@ $(BUILD_DIR)/$(SRC_DIR):
 clean: 
 	rm -rf build $(TARGET_EXEC)
 	rm -f $(TARGET_BIN)
+	
+format: $(SRCS)
+	@echo "[INFO] Formatting files $?"
+	clang-format -i $?
+	touch format
 	
 .PHONY: package
 package: $(TARGET_BIN)

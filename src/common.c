@@ -16,13 +16,14 @@ char* readFile(const char* filepath) {
 
     buf = (char*)malloc(count);
     if (buf == NULL) return_defer(NULL);
-    if (fread(buf, sizeof(char), count, fp) != (size_t)count) return_defer(NULL);
-	
-	result = buf; 
-	buf = NULL; 
-	
+    if (fread(buf, sizeof(char), count, fp) != (size_t)count)
+        return_defer(NULL);
+
+    result = buf;
+    buf = NULL;
+
 defer:
     if (fp) fclose(fp);
-	if (buf) free(buf); 
+    if (buf) free(buf);
     return result;
 }

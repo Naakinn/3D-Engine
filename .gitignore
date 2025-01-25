@@ -5,3 +5,6 @@ build/
 
 # cache
 .cache/
+
+# special files
+format

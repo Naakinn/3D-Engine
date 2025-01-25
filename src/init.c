@@ -54,6 +54,7 @@ int init(const char* title, int width, int height) {
 }
 
 void quit() {
+    QLOGF(qlINFO, "Exiting\n");
     glDeleteBuffers(1, &glVBOVertex.name);
     glDeleteBuffers(1, &glEBO);
     glDeleteVertexArrays(1, &glVAO);
