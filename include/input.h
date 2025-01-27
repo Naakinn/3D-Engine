@@ -4,6 +4,6 @@
 #include <SDL2/SDL.h>
 
 int listenEvents(SDL_Scancode scancode);
-void checkQuit(); 
+void checkQuit();
 
 #endif

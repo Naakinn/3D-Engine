@@ -11,12 +11,14 @@
 #define NEAR 0.1f
 
 #define setUniformName(u) u.name = #u
-#define setUniformLocation(u) u.location = glGetUniformLocation(GLPIPELINEPROGRAM, u.name)
+#define setUniformLocation(u) \
+    u.location = glGetUniformLocation(GLPIPELINEPROGRAM, u.name)
 
 typedef struct {
-    GLuint name;  
-    GLuint vertIdx;  // Index of the generic vertex attribute for vertices(layout)
-    GLuint colIdx;   // Index of the generic vertex attribute for color(layout)
+    GLuint name;
+    GLuint
+        vertIdx;  // Index of the generic vertex attribute for vertices(layout)
+    GLuint colIdx;  // Index of the generic vertex attribute for color(layout)
 } VBO;
 
 typedef struct {

@@ -5,7 +5,6 @@
 
 GLuint compileShader(GLuint type, const char* source);
 
-GLuint createShaderProgram(const char* vertexSrc,
-                           const char* fragmentSrc);
+GLuint createShaderProgram(const char* vertexSrc, const char* fragmentSrc);
 
 #endif

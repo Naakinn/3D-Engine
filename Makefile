@@ -3,14 +3,15 @@ TARGET_EXEC := engine
 TARGET_BIN := $(TARGET_EXEC).tar.gz
 SRC_DIR := src
 BUILD_DIR := build
+INC_DIR := include
 SRCS := $(shell find $(SRC_DIR) -name '*.c')
+INCLUDES := $(shell find include -type f ! -name '*glad*' ! -name '*khr*')
 OBJS := $(patsubst %.c, $(BUILD_DIR)/%.o, $(SRCS))
 DEPS := $(patsubst %.o, %.d, $(OBJS))
 
 INCFLAGS := -I./include -I./external/cglm/include
 CFLAGS := $(INCFLAGS) -MMD -Wall -Wextra
-LDFLAGS := $(shell sdl2-config --cflags --libs)
-LDFLAGS += -lm
+LDFLAGS := $(shell sdl2-config --cflags --libs) -lm
 
 DEBUG ?= ON
 OPTIMIZE ?= OFF
@@ -38,7 +39,7 @@ clean:
 	rm -rf build $(TARGET_EXEC)
 	rm -f $(TARGET_BIN)
 	
-format: $(subst src/glad.c,,$(SRCS))
+format: $(INCLUDES) $(subst $(SRC_DIR)/glad.c,,$(SRCS))
 	@echo "[INFO] Formatting files $?"
 	clang-format -i $?
 	touch format
