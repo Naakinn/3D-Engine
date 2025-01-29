@@ -13,7 +13,7 @@ void __qlogf(qlEnum qlLogLevel, const char* filename, unsigned long line,
             printf(qlYELLOW "[WARN] (%s:%lu) ", filename, line);
             break;
         case qlERROR:
-            printf(qlRED "[ERROR] (%s:%lu) ", filename, line);
+            fprintf(stderr, qlRED "[ERROR] (%s:%lu) ", filename, line);
             break;
     }
     vprintf(format, args);
