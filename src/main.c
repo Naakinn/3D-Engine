@@ -66,7 +66,6 @@ int main(int argc, char* argv[]) {
 
     if (texturePath) QLOGF(qlDEBUG, "Path to texture: %s\n", texturePath);
 
-    return_defer(EXIT_SUCCESS);
     if (init("OpenGL", WIDTH, HEIGHT)) {
         return 1;
     }
