@@ -20,7 +20,7 @@ int listenEvents(SDL_Scancode scancode) {
                 return handleKeyUp(&event.key, scancode);
                 break;
             case SDL_QUIT:
-                quit();
+                quit(EXIT_FAILURE);
             default:
                 break;
         }

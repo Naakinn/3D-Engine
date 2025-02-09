@@ -53,8 +53,8 @@ int init(const char* title, int width, int height) {
     return 0;
 }
 
-void quit() {
-    QLOGF(qlINFO, "Exiting\n");
+void quit(int status) {
+    QLOGF(qlINFO, "Shutting down with exit code %d\n", status);
     glDeleteBuffers(1, &glVBOVertex.name);
     glDeleteBuffers(1, &glEBO);
     glDeleteVertexArrays(1, &glVAO);
@@ -62,5 +62,5 @@ void quit() {
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(glWindow);
     SDL_Quit();
-    exit(EXIT_SUCCESS);
+    exit(status);
 }

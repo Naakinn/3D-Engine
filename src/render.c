@@ -165,9 +165,9 @@ void preDraw(bool culling) {
     // setUniformLocation(uScale);
     // setUniformLocation(uTime);
 
-    if (checkUniform(&uTranslation)) quit();
-    if (checkUniform(&uProjection)) quit();
-    if (checkUniform(&uRotation)) quit();
+    if (checkUniform(&uTranslation)) quit(EXIT_FAILURE);
+    if (checkUniform(&uProjection)) quit(EXIT_FAILURE);
+    if (checkUniform(&uRotation)) quit(EXIT_FAILURE);
     // if (checkUniform(&uScale)) quit();
     // if (checkUniform(&uTime)) quit();
 }
@@ -180,6 +180,9 @@ void draw() {
 
     // Listen input
     const Uint8* state = SDL_GetKeyboardState(NULL);
+    if (state[SDL_SCANCODE_Q]) {
+		quit(EXIT_SUCCESS);
+    }
     if (state[SDL_SCANCODE_W]) {
         zOffset -= 0.01f;
     }

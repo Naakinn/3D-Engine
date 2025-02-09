@@ -4,6 +4,6 @@
 #include <SDL2/SDL.h>
 
 int init(const char* title, int width, int height);
-void quit();
+void quit(int status);
 
 #endif
