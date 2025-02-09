@@ -44,8 +44,8 @@ int init(const char* title, int width, int height) {
         return 1;
     }
 
-#ifdef DEBUG
     QLOGF(qlDEBUG, "Running in debug mode\n");
+#ifdef DEBUG
     glCheckCall(glEnable(GL_DEBUG_OUTPUT));
     glDebugMessageCallback(messageCallback, 0);
 #endif

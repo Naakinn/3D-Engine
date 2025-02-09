@@ -24,6 +24,9 @@ void __qlogf(qlEnum qlLogLevel, const char* filename, unsigned long line,
 
 void __qlogf_wrapper(qlEnum qlLogLevel, const char* filename,
                      unsigned long line, const char* format, ...) {
+#ifndef DEBUG
+    if (qlLogLevel == qlDEBUG) return;
+#endif
     va_list args;
     va_start(args, format);
     __qlogf(qlLogLevel, filename, line, format, args);
