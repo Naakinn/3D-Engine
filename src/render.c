@@ -137,7 +137,7 @@ int checkUniform(const Uniform* u) {
     if (u->location < 0) {
         QLOGF(qlERROR, "Couldn't find uniform `%s`, location: %d\n", u->name,
               u->location);
-        quit();
+        return 1;
     }
     return 0;
 }

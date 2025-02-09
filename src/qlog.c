@@ -1,5 +1,7 @@
 #include "qlog.h"
 
+#include <stdio.h>
+
 void __qlogf(qlEnum qlLogLevel, const char* filename, unsigned long line,
              const char* format, va_list args) {
     switch (qlLogLevel) {

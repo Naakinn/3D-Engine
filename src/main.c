@@ -40,7 +40,7 @@ int parse_arg(int argc, char* argv[]) {
                 break;
             default:
                 QLOGF(qlERROR,
-                      "Getopt returned character code "
+                      "getopt returned character code "
                       "0x%x\n",
                       c);
                 return_defer(EXIT_FAILURE);
@@ -70,11 +70,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    getInfo();
+
     vertexSpec();
     shaderSpec("shaders/vert.glsl", "shaders/frag.glsl");
     preDraw(true);
-
-    getInfo();
 
     int8_t do_render = 1;
 
@@ -91,5 +91,5 @@ int main(int argc, char* argv[]) {
         SDL_Delay(16);
     }
 defer:
-    return 0;
+    return result;
 }

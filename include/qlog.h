@@ -2,7 +2,6 @@
 #define __QLOG_H_
 
 #include <stdarg.h>
-#include <stdio.h>
 
 #define qlRED "\033[0;31m"
 #define qlGREEN "\033[0;32m"
