@@ -18,16 +18,15 @@ $ git clone --recurse-submodules https://github.com/Naakinn/3D-Engine
 
 Then build and run. 
 ```
-$ make 
+$ make
 $./engine
 ```
 
-### Build in debug mode or with some optimizations (-O2)
+### Build in debug mode or in release mode
 ```
-$ make DEBUG=ON
+$ make
 # or 
-$ make OPTIMIZE=ON 
-$ ./engine
+$ make release
 ```
 # Features 
 

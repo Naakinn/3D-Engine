@@ -1,2 +1,2 @@
 CompileFlags:
-  Add: [-I../external/cglm/include, -xc]
+  Add: [-I../external/cglm/include, -xc, -std=c99]

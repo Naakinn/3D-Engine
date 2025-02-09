@@ -4,27 +4,26 @@ TARGET_BIN := $(TARGET_EXEC).tar.gz
 SRC_DIR := src
 BUILD_DIR := build
 INC_DIR := include
+
 SRCS := $(shell find $(SRC_DIR) -name '*.c')
-INCLUDES := $(shell find include -type f ! -name '*glad*' ! -name '*khr*')
+INC_TO_FORMAT := $(shell find include -type f ! -name '*glad*' ! -name '*khr*')
 OBJS := $(patsubst %.c, $(BUILD_DIR)/%.o, $(SRCS))
 DEPS := $(patsubst %.o, %.d, $(OBJS))
 
-INCFLAGS := -I./include -I./external/cglm/include
-CFLAGS := $(INCFLAGS) -MMD -Wall -Wextra
+INCFLAGS := -I ./include -isystem ./external/cglm/include
+CFLAGS := $(INCFLAGS) -MMD -Wall -Wextra -std=c99
 LDFLAGS := $(shell sdl2-config --cflags --libs) -lm
 
-DEBUG ?= ON
-OPTIMIZE ?= OFF
+all: debug
 
-ifeq ($(DEBUG), ON) 
-	CFLAGS += -g -DDEBUG
-else ifeq ($(OPTIMIZE), ON)
-	CFLAGS += -O2
-endif
-
+debug: CFLAGS += -g -DDEBUG 
+release: CFLAGS += -O2
+release: LDFLAGS += -flto
+	
+debug: $(TARGET_EXEC)
+release: $(TARGET_EXEC)
+	
 $(TARGET_EXEC): $(OBJS)
-	@echo "[INFO] DEBUG is set to $(DEBUG)"
-	@echo "[INFO] OPTIMIZE is set to $(OPTIMIZE)"
 	@echo "[INFO] CFLAGS is $(CFLAGS)"
 	$(CC) -o $@ $(OBJS) $(LDFLAGS)
 	
@@ -39,7 +38,7 @@ clean:
 	rm -rf build $(TARGET_EXEC)
 	rm -f $(TARGET_BIN)
 	
-format: $(INCLUDES) $(subst $(SRC_DIR)/glad.c,,$(SRCS))
+format: $(INC_TO_FORMAT) $(subst $(SRC_DIR)/glad.c,,$(SRCS))
 	@echo "[INFO] Formatting files $?"
 	clang-format -i $?
 	touch format
