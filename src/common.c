@@ -12,9 +12,11 @@ char* readFile(const char* filepath) {
     if (fseek(fp, 0, SEEK_END)) return_defer(NULL);
     long count = ftell(fp);
     if (count < 0) return_defer(NULL);
-    rewind(fp);
+    fseek(fp, 0, SEEK_SET);
 
-    buf = (char*)malloc(count);
+    buf = (char*)malloc(count + 1);  // for null-terminator
+    buf[count] = '\0';
+
     if (buf == NULL) return_defer(NULL);
     if (fread(buf, sizeof(char), count, fp) != (size_t)count)
         return_defer(NULL);
