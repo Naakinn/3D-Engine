@@ -11,12 +11,10 @@
 #include "settings.h"
 #include "shader.h"
 
-// VAO
-GLuint glVAO = 0;
-// VBO
-VBO glVBOVertex = {0, 0, 1};
-// EBO
-GLuint glEBO = 0;
+glVAO_t glVAO = { .name = 0 };
+glVBO_t glVBOVertex = {.name = 0, .vertIdx = 0, .colIdx = 1};
+glEBO_t glEBO = { .name = 0 };
+
 // Grapshics pipeline shader program
 GLuint glPipeLineProgram = 0;
 #define GLPIPELINEPROGRAM glPipeLineProgram
@@ -25,16 +23,12 @@ GLuint vertexNumber;
 GLuint elementNumber;
 
 // Perspective
-const float aspect = (float)WIDTH / (float)HEIGHT;
-const float absoluteScale =
-    (float)SCALE_FACTOR / (float)(HEIGHT < WIDTH ? HEIGHT : WIDTH);
-const float fov = 45.0f;
+static const float aspect = (float)WIDTH / (float)HEIGHT;
+static const float fov = 45.0f;
 
-static Uniform uTranslation, uProjection, uRotation /*, uScale */;
-// static Uniform uTime;
-
-static mat4 translate, projection, rotationY, rotationX, /* scale, */ rotation;
-// static vec3 absoluteScaleVec;
+// Matrices and uniforms
+static glUniform_t uTranslation, uProjection, uRotation;
+static mat4 translate, projection, rotationY, rotationX, rotation;
 
 void vertexSpec() {
     // clang-format off
@@ -73,10 +67,12 @@ void vertexSpec() {
     QLOGF(qlINFO, "Number of vertices: %u\n", vertexNumber);
 
     // Generate VAO
-    glGenVertexArrays(1, &glVAO);
+	glVAO.enabled = true;
+    glGenVertexArrays(1, &glVAO.name);
     // Select VAO
-    glBindVertexArray(glVAO);
+    glBindVertexArray(glVAO.name);
     // Generate VBO
+	glVBOVertex.enabled = true;
     glGenBuffers(1, &glVBOVertex.name);
     // Select vertex VBO
     glBindBuffer(GL_ARRAY_BUFFER, glVBOVertex.name);
@@ -86,9 +82,10 @@ void vertexSpec() {
                  GL_STATIC_DRAW);
 
     // EBO
-    glGenBuffers(1, &glEBO);
+	glEBO.enabled = true;
+    glGenBuffers(1, &glEBO.name);
     // Select EBO
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glEBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glEBO.name);
     // Fill EBO with data
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elementData), elementData,
                  GL_STATIC_DRAW);
@@ -133,7 +130,7 @@ void getInfo() {
           glGetString(GL_SHADING_LANGUAGE_VERSION));
 }
 
-int checkUniform(const Uniform* u) {
+int checkUniform(const glUniform_t* u) {
     if (u->location < 0) {
         QLOGF(qlERROR, "Couldn't find uniform `%s`, location: %d\n", u->name,
               u->location);
@@ -156,32 +153,25 @@ void preDraw(bool culling) {
     setUniformName(uTranslation);
     setUniformName(uProjection);
     setUniformName(uRotation);
-    // setUniformName(uScale);
-    // setUniformName(uTime);
 
     setUniformLocation(uTranslation);
     setUniformLocation(uProjection);
     setUniformLocation(uRotation);
-    // setUniformLocation(uScale);
-    // setUniformLocation(uTime);
 
     if (checkUniform(&uTranslation)) quit(EXIT_FAILURE);
     if (checkUniform(&uProjection)) quit(EXIT_FAILURE);
     if (checkUniform(&uRotation)) quit(EXIT_FAILURE);
-    // if (checkUniform(&uScale)) quit();
-    // if (checkUniform(&uTime)) quit();
 }
 
 void draw() {
     static float rotationAngleX = 0.0f;
     static float rotationAngleY = 0.0f;
     static float zOffset = 0.0f;
-    // float time;
 
     // Listen input
     const Uint8* state = SDL_GetKeyboardState(NULL);
     if (state[SDL_SCANCODE_Q]) {
-		quit(EXIT_SUCCESS);
+        quit(EXIT_SUCCESS);
     }
     if (state[SDL_SCANCODE_W]) {
         zOffset -= 0.01f;
@@ -193,15 +183,12 @@ void draw() {
     rotationAngleX += 1.0f;
     rotationAngleY += 1.0f;
 
-    // glm_vec3_make(&absoluteScale, absoluteScaleVec);
-
     glm_translate_make(translate, (vec3){0.0f, 0.0f, zOffset - 3.0f});
     glm_perspective(glm_rad(fov), aspect, NEAR, FAR, projection);
     glm_rotate_make(rotationY, glm_rad(rotationAngleY),
                     (vec3){0.0f, 1.0f, 0.0f});
     glm_rotate_make(rotationX, glm_rad(rotationAngleX),
                     (vec3){1.0f, 0.0f, 0.0f});
-    // glm_scale_make(scale, absoluteScaleVec);
     glm_mul(rotationY, rotationX, rotation);
 
     // Set uniforms
@@ -211,11 +198,6 @@ void draw() {
                        (const GLfloat*)translate);
     glUniformMatrix4fv(uProjection.location, 1, GL_FALSE,
                        (const GLfloat*)projection);
-    // glUniformMatrix4fv(uScale.location, 1, GL_FALSE, (const GLfloat*)scale);
-
-    // Update uTime uniform
-    // time = SDL_GetTicks() / 1000.0f;
-    // glUniform1f(uTime.location, time);
 
     // Draw
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);

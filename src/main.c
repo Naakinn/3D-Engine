@@ -11,6 +11,7 @@
 static char* short_options =
     "ht:";  // ':' after a flag means that it requires argument.
 static struct option long_options[] = {{"texture", required_argument, 0, 't'},
+                                       {"help", no_argument, 0, 'h'},
                                        {0, 0, 0, 0}};
 static const char* texturePath = NULL;
 
@@ -19,7 +20,8 @@ SDL_GLContext* glContext = NULL;
 
 void usage() {
     printf("Usage: ./engine [OPTION]...\n");
-    printf("Basic 3D engine, idk what to implement. \n");
+    printf("Basic 3D engine, idk what to implement.\n");
+    printf("Press 'q' to quit.\n");
     printf("\t-t --texture <FILE> Draw textures from FILE.\n");
     printf("\t-h --help Display help page.\n");
 }
@@ -71,6 +73,7 @@ int main(int argc, char* argv[]) {
     }
 
     getInfo();
+    QLOGF(qlINFO, "Press 'q' to quit.\n");
 
     vertexSpec();
     shaderSpec("shaders/vert.glsl", "shaders/frag.glsl");
@@ -91,5 +94,5 @@ int main(int argc, char* argv[]) {
         SDL_Delay(16);
     }
 defer:
-	quit(result); 
+    quit(result);
 }

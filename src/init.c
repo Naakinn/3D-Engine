@@ -10,9 +10,9 @@
 
 extern SDL_GLContext* glContext;
 extern SDL_Window* glWindow;
-extern VBO glVBOVertex;
-extern GLuint glEBO;
-extern GLuint glVAO;
+extern glVAO_t glVAO;
+extern glVBO_t glVBOVertex;
+extern glEBO_t glEBO;
 
 int init(const char* title, int width, int height) {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -55,12 +55,13 @@ int init(const char* title, int width, int height) {
 
 void quit(int status) {
     QLOGF(qlINFO, "Shutting down with exit code %d\n", status);
-    glDeleteBuffers(1, &glVBOVertex.name);
-    glDeleteBuffers(1, &glEBO);
-    glDeleteVertexArrays(1, &glVAO);
+    if (glVBOVertex.enabled) glDeleteBuffers(1, &glVBOVertex.name);
+    if (glEBO.enabled) glDeleteBuffers(1, &glEBO.name);
+    if (glVAO.enabled) glDeleteVertexArrays(1, &glVAO.name);
 
-    SDL_GL_DeleteContext(glContext);
-    SDL_DestroyWindow(glWindow);
+    if (glContext) SDL_GL_DeleteContext(glContext);
+    if (glWindow) SDL_DestroyWindow(glWindow);
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
     SDL_Quit();
     exit(status);
 }

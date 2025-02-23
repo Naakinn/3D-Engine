@@ -1,6 +1,8 @@
 #ifndef __render_private_h
 #define __render_private_h
 
+#include <stdbool.h>
+
 #include "glad/glad.h"
 
 #define VERTEXSIZE 6
@@ -15,15 +17,24 @@
     u.location = glGetUniformLocation(GLPIPELINEPROGRAM, u.name)
 
 typedef struct {
+    bool enabled;
     GLuint name;
     GLuint
         vertIdx;  // Index of the generic vertex attribute for vertices(layout)
     GLuint colIdx;  // Index of the generic vertex attribute for color(layout)
-} VBO;
+} glVBO_t;
+
+typedef struct {
+    bool enabled;
+    GLuint name;
+} glBaseGLuint_t;
+
+typedef glBaseGLuint_t glEBO_t;
+typedef glBaseGLuint_t glVAO_t;
 
 typedef struct {
     GLint location;
     const char* name;
-} Uniform;
+} glUniform_t;
 
 #endif
